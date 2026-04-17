@@ -14,11 +14,11 @@ include(lib_folder+"/js/OpenHarmony-0.11.0/openHarmony.js")
 MessageLog.trace("----------------------------------------------------------")
 
 include(script_folder+"/engine/parse_args.js")
-include(script_folder+"/engine/camera.js")
-include(script_folder+"/engine/bg_cadre.js")
+include(script_folder+"/engine/scene_build.js")
 
 const args = parse_args()
 MessageLog.trace(JSON.stringify(args))
-//apply_bg_cadre(args)
+const json_input_path = args.json_input_path
+build_scene(json_input_path)
 
 scene.saveAll()

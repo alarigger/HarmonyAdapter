@@ -1,14 +1,4 @@
 {
-    "paths":{
-        "library":"",
-        "templates":""
-    },
-    "input_scene_file":{
-        "path": {
-            "absolute":"",
-            "relative":""
-        }        
-    },
     "context": {
         "project": "myProject",
         "task_name": "animation",
@@ -20,10 +10,7 @@
     },
     "template": {
         "name": "template_shot",
-        "path": {
-            "absolute":"",
-            "relative":""
-        }
+        "path": ""
     },
     "casting": {
         "assets": [
@@ -36,10 +23,7 @@
                     {
                         "type": "TPL",
                         "role":"rig",
-                        "path": {
-                            "absolute": "",
-                            "relative": ""
-                        }
+                        "path": "__LIBRARY__/ch_A.tpl"
                     }
                 ]
             },
@@ -52,10 +36,7 @@
                     {
                         "type": "TPL",
                         "role":"rig",
-                        "path": {
-                            "absolute": "",
-                            "relative": ""
-                        }
+                        "path": "__LIBRARY__/ch_B.tpl"
                     }
                 ]
             },
@@ -68,10 +49,7 @@
                     {
                         "type": "TPL",
                         "role":"rig",
-                        "path": {
-                            "absolute": "",
-                            "relative": ""
-                        }
+                        "path": "__LIBRARY__/ch_C.tpl"
                     }
                 ]
             },
@@ -84,10 +62,7 @@
                     {
                         "type": "TPL",
                         "role":"rig",
-                        "path": {
-                            "absolute": "",
-                            "relative": ""
-                        }
+                        "path": "__LIBRARY__/pr_A.tpl"
                     }
                 ]
             },
@@ -100,10 +75,7 @@
                     {
                         "type": "PSD",
                         "role":"background",
-                        "path": {
-                            "absolute": "",
-                            "relative": ""
-                        }
+                        "path": ""
                     }
                 ]
             }

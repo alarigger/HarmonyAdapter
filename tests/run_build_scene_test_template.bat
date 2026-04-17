@@ -65,10 +65,10 @@ set json_path=%TEST_OUTPUT_FOLDER%\json\%shot_name%_%shot_type%_%testid%.json
 for %%I in ("%json_path%") do set json_path=%%~fI
 
 :: normalize the path before running CLI
-set json_input_path=%TEST_OUTPUT_FOLDER%\json\build_scene\%json_input_name%.json
+set json_input_path=%TEST_INPUT_FOLDER%\json\build_scene\%json_input_name%.json
 for %%I in ("%json_input_path%") do set json_input_path=%%~fI
 
-set HARMONY_LIBRARY_PATH="%TEST_INPUT_FOLDER%\tpl\library"
+set HARMONY_LIBRARY_PATH=%TEST_INPUT_FOLDER%\tpl\library
 for %%I in ("%HARMONY_LIBRARY_PATH%") do set HARMONY_LIBRARY_PATH=%%~fI
 
 :: --- Run CLI ---
