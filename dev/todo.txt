@@ -1,2 +1,6 @@
 2026_04_17
 breif with Clea : starting with simple import tpl script 
+
+done : defined a json schema for the scene build (tests/input/json/build_scene/build_scene_A.json)
+coded a js model to injest the json 
+coded a 

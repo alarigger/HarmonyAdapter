@@ -229,20 +229,31 @@ function SceneBuilDataFactory(){
 
 
 function SceneBuilder() {
-
+    /**
+     * Building scene according to the scenebuild data 
+     * @param {SceneBuilData} scene_build_data 
+     */
     this.build = function(scene_build_data) {
-        MessageLog.trace("[SceneBuild] importing template ")
-        this._import_template(scene_build_data.template)
-        MessageLog.trace("[SceneBuild] importing casting ")
-        this._import_casting(scene_build_data.casting)
+        if(scene_build_data.template){
+            MessageLog.trace("[SceneBuild] importing template ")
+            this._import_template(scene_build_data.template)
+        }
+        if(scene_build_data.casting){
+            MessageLog.trace("[SceneBuild] importing casting ")
+            this._import_casting(scene_build_data.casting)
+        }
     };
-
+    /**
+     * Import template nodes 
+     * @param {Template} template 
+     */
     this._import_template = function(template){
-
+        // wip 
     }    
     /**
-     * 
+     * Import all cast members and their associated files into the node view 
      * @param {Casting} casting 
+     * @param {Template} template 
      */
     this._import_casting = function(casting,template){
         return new CastingImporter().import_casting(casting,template)
@@ -306,8 +317,6 @@ function CastingValidation(){
 
 function CastingImporter(){
 
-
-
     this._validation = new CastingValidation()
     this._file_index = 0
     this._next_x = 0
@@ -316,7 +325,7 @@ function CastingImporter(){
 
     var self = this
     /**
-     * 
+     * Import all casting asset and asset files and position their node according to the template composite and backdrops
      * @param {Casting} casting 
      * @param {Template} template 
      */
@@ -336,29 +345,64 @@ function CastingImporter(){
             // use later for backdrop grouping 
         }
     }   
+
+
     /**
-     * 
+     * Import all asset files 
      * @param {Asset} asset 
      */
     this._import_asset = function(asset){
-        
         for(var c = 0 ; c < asset.files.length ; c++ ){
             var composite = this._template.get_composite(asset.type)
             var asset_group = this._import_asset_file(asset.files[c],composite)
 
         }
     }    
+
+
     /**
-     * 
-     * @param {AssetFile} casting 
+     * Import single asset file inside a new asset group and link it to the composite
+     * The node are imported according to the matching asset_file type strategy 
+     * @param {AssetFile} asset_file 
+     * @param {$.oNode} composite 
+     * @returns {$.oGroupNode}
      */
     this._import_asset_file = function(asset_file,composite){
-        asset_file.debug_print()
-        return this._import_file(asset_file,composite)
-    }
 
+        // show the asset file data 
+        asset_file.debug_print()
+
+        // create the asset group that will recieve the nodes 
+        var group = this._add_asset_group(asset_file,composite);
+
+        // search for the import_strategy matching the asset file type 
+        const type = asset_file.type;
+        var import_strategy = this._type_strategies[type];
+        if (!import_strategy) {
+            MessageLog.trace("[SceneBuilder] No import strategy for type: " + type);
+            return group;
+        }
+
+        // import nodes inside the group 
+        import_strategy(path, group);
+
+        // like the group output to the given composite node 
+        group.linkOutNode(composite)
+        this._file_index+=1
+
+        // return the complete group
+        return group
+        
+    };
+
+    /**
+     * Get or Create the asset file group for a clean node import
+     * @param {AssetFile} asset_file 
+     * @param {$.oNode} composite 
+     * @returns {$.oGroupNode}
+     */
     this._add_asset_group = function(asset_file,composite){
-        var group_name = asset_file.get_file_name();
+        var group_name = asset_file.get_file_name()+"_"+this._file_index; 
         try {
             var existing = $.scene.getNodeByPath("Top/" + group_name);
             if (existing && node.type(existing.path)=="GROUP") {
@@ -372,52 +416,50 @@ function CastingImporter(){
 
     }
 
+    /**
+     * place the asset group in line and in the rigth backdrop (infos given by the template )
+     * @param {$.oGroupNode} group 
+     * @param {AssetFile} asset_file 
+     * @param {$.oNode} composite 
+     * @returns {$.oGroupNode}
+     */
     this._place_asset_group = function(group,asset_file,composite){
-        if(this._next_x==0){
-            group.y = composite.y +500
+        if(this._next_x==0 && composite){
+            this._move_to_backdrop(group,"")
+            this._next_y = composite.y -500
+            group.x = composite.x 
         }
         group.x = group.x + this._next_x
         group.y= this._next_y
         this._next_x+=100
-        this._next_y=group.y
         this._add_asset_backdrop(group,asset_file)
         return group
     }
+
+
+
+    /**
+     * add a backdrop around the group with info about the asset file 
+     * @param {$.oGroupNode} group 
+     * @param {AssetFile} asset_file  
+     */
     this._add_asset_backdrop = function(group,asset_file){
         //wip
     }
 
+    /**
+     * place the asset group at the top right corner of the back drop 
+     * @param {$.oGroupNode} group 
+     * @param {*} backdrop 
+     */
     this._move_to_backdrop = function(group,backdrop){
         // wip 
-    }   
+    }  
 
-    this._import_file = function(asset_file,composite){
-
-        var path = asset_file.path;
-        var group_name = asset_file.get_file_name()+"_"+this._file_index; 
-        var group = this._add_asset_group(asset_file,composite);
-
-        var type = asset_file.type;
-
-        var import_strategy = this._type_strategies[type];
-
-        if (!import_strategy) {
-            MessageLog.trace("[SceneBuilder] No import strategy for type: " + type);
-            return null;
-        }
-        
-        import_strategy(path, group);
-
-        group.linkOutNode(composite)
-        this._file_index+=1
-
-        return group
-        
-    };
-
+    // todo : separate importation from asset and make it more general
     this._type_strategies = {
 
-        "TPL": function(path, group){
+        TPL: function(path, group){
 
             var nodes = group.importTemplate(path);
             MessageLog.trace("[TPL] imported nodes raw: " + nodes);
@@ -452,12 +494,21 @@ function CastingImporter(){
 
             return nodes;
         },
-        "PSD":function(path,group){
+        PSD:function(path,group){
             return group.importPSD(path,true,true,true,true)
         },
-        "PNG":function(path,group){
+        PNG:function(path,group){
+            return group
+        },        
+        PNG_SEQUENCE:function(path,group){
             return group
         },
+        PNG_AS_LAYERS:function(path,group){
+            return group
+        },        
+        VIDEO:function(path,group){
+            return group
+        }
     }    
     this._role_strategies = {
         "rig":function(path,group){
