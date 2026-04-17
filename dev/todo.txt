@@ -3,4 +3,12 @@ breif with Clea : starting with simple import tpl script
 
 done : defined a json schema for the scene build (tests/input/json/build_scene/build_scene_A.json)
 coded a js model to injest the json 
-coded a 
+coded import strategies for some imported file type (tpl,psd)
+
+todo : clean the path env var resolution (read the config file instead or set the env var with python )
+todo : import template 
+todo : apply bg fit to bg asset (from where do we read the cadre ?)
+todo : separate node creation from scene build with rig_tools class 
+todo : API pass scene build data json throught specific arg "scene_build_data_json" instead of -ji
+todo : change repos name to 2dSceneBuilder
+todo : make request class more flexible for preview export and build 

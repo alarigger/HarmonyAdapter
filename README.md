@@ -85,7 +85,7 @@ Example:
 * **Asset / AssetFile**
 
   * Represent casting elements
-  * Handle file resolution and metadata
+  * Handle file import and metadata
 
 ---
 
