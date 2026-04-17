@@ -76,4 +76,6 @@ call "%MAIN_PATH%" -r %request_name% -sn %shot_name% -sp "%shot_path%" -ji "%jso
 
 echo.%shot_folder%
 
+%shot_path%
+
 endlocal

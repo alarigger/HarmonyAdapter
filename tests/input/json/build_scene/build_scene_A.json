@@ -10,65 +10,82 @@
     },
     "template": {
         "name": "template_shot",
-        "path": ""
+        "path": "",
+        "backdrop_map" : {
+            "Character":"ANIM",
+            "Prop":"ANIM",
+            "FX":"ANIM",
+            "BG":"BG",
+            "Background":"BG",
+            "Reference":"REF"
+        },
+        "final_composite" : "Top/Composite",
+        "composite_map" : {
+            "Character":"Top/Composite",
+            "Prop":"Top/Composite",
+            "FX":"Top/Composite",
+            "BG":"Top/Composite",
+            "Background":"Top/Composite",
+            "Reference":"Top/Composite"
+        }
     },
     "casting": {
         "assets": [
             {
                 "id": 1,
-                "name": "ch_A",
+                "name": "CH_A",
                 "type": "Character",
                 "subType": "mainpack",
                 "files":[
                     {
                         "type": "TPL",
                         "role":"rig",
-                        "path": "__LIBRARY__/ch_A.tpl"
+                        "path": "__LIBRARY__/CH_A.tpl"
                     }
                 ]
             },
             {
                 "id": 2,
-                "name": "ch_B",
+                "name": "CH_B",
                 "type": "Character",
                 "subType": "mainpack",
                 "files":[
                     {
                         "type": "TPL",
                         "role":"rig",
-                        "path": "__LIBRARY__/ch_B.tpl"
+                        "path": "__LIBRARY__/CH_B.tpl"
                     }
                 ]
             },
             {
                 "id": 3,
-                "name": "ch_C",
+                "name": "CH_C",
                 "type": "Character",
                 "subType": "secondary",
                 "files":[
                     {
                         "type": "TPL",
                         "role":"rig",
-                        "path": "__LIBRARY__/ch_C.tpl"
+                        "path": "__LIBRARY__/CH_C.tpl"
                     }
                 ]
             },
             {
                 "id": 4,
-                "name": "pr_A",
+                "name": "PR_A",
                 "type": "Prop",
                 "subType": "mainpack",
                 "files":[
                     {
                         "type": "TPL",
                         "role":"rig",
-                        "path": "__LIBRARY__/pr_A.tpl"
+                        "path": "__LIBRARY__/PR_A.tpl"
                     }
                 ]
             },
             {
                 "id": 5,
-                "name": "bg_A",
+                "name": "BG_A",
                 "type": "Background",
                 "subType": "mainpack",
                 "files":[

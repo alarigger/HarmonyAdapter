@@ -30,10 +30,68 @@ function Context(data) {
     this.shot = data.shot;
     this.cut_duration = data.cut_duration;
 }
-function Template(data) {
-    this.name = data.name;
-    this.path = resolve_library_path(data.path);
+function DefaultTemplate(data) {
+
+
 }
+function Template(data) {
+    this.name = data.name != undefined ? data.name : null;
+    this.path = data.path != undefined ? resolve_library_path(data.path) : null;;
+    this.final_composite = "Top/Composite"
+    this.backdrop_map = data.backdrop_map != undefined ? data.backdrop_map : {
+        "Character":"ANIM",
+        "Prop":"ANIM",
+        "FX":"ANIM",
+        "BG":"BG",
+        "Background":"BG",
+        "Reference":"REF"
+    }
+    this.composite_map = data.composite_map != undefined ? data.composite_map :{
+        "Character":"Top/Composite",
+        "Prop":"Top/Composite",
+        "FX":"Top/Composite",
+        "BG":"Top/Composite",
+        "Background":"Top/Composite",
+        "Reference":"Top/Composite"
+    }
+    this.get_composite = function(asset_type){
+
+        if (!asset_type) {
+            MessageLog.trace("[Template] get_composite: missing type");
+            return this.final_composite;
+        }
+
+        var path = this.composite_map[asset_type];
+
+        if (!path) {
+            MessageLog.trace("[Template] get_composite: unknown type '" + asset_type + "' → fallback used");
+            return this.final_composite_path;
+        }
+
+        return path;
+    };
+    this.get_backdrop = function(asset_type){
+
+        var all_brackdrops = backdrops("Top")
+        MessageLog.trace(all_brackdrops)
+        if (!asset_type) {
+            MessageLog.trace("[Template] get_backdrop: missing type");
+            return "ANIM"; // safe default
+        }
+
+        var backdrop = this.backdrop_map[asset_type];
+
+        if (!backdrop) {
+            MessageLog.trace("[Template] get_backdrop: unknown type '" + asset_type + "' → fallback ANIM");
+            return "ANIM";
+        }
+
+
+        return backdrop;
+    };
+}
+
+
 function Asset(data) {
     this.id = data.id;
     this.name = data.name;
@@ -45,6 +103,7 @@ function Asset(data) {
         for (var i = 0; i < data.files.length; i++) {
             var af = new AssetFile(data.files[i])
             af.scene_name = [this.type,this.name,i].join("_")
+            af.asset_type = this.type
             this.files.push(af);
         }
     }
@@ -52,6 +111,7 @@ function Asset(data) {
 function AssetFile(data) {
     this.scene_name = null
     this.type = data.type;
+    this.asset_type = null;
     this.role = data.role;
     this.path = resolve_library_path(data.path);
     this.debug_print = function(prefix) {
@@ -186,21 +246,87 @@ function SceneBuilder() {
      * 
      * @param {Casting} casting 
      */
-    this._import_casting = function(casting){
-        return new CastingImporter().import_casting(casting)
+    this._import_casting = function(casting,template){
+        return new CastingImporter().import_casting(casting,template)
     }    
 
 }
 
+function CastingValidation(){
+    this._valid_assets = []
+    this.validate_asset = function(asset){
+
+        var isValid = true;
+
+        if (!asset) {
+            MessageLog.trace("[Asset Validation][ERROR] Null asset");
+            return false;
+        }
+
+        if (!asset.name) {
+            MessageLog.trace("[Asset Validation][ERROR] Asset missing name");
+            isValid = false;
+        }
+
+        if (!asset.files || asset.files.length === 0) {
+            MessageLog.trace("[Asset Validation][ERROR] No files in asset: " + asset.name);
+            return false;
+        }
+
+        for (var i = 0; i < asset.files.length; i++) {
+
+            var file = asset.files[i];
+
+            if (!file.path || file.path === "") {
+                MessageLog.trace("[Asset Validation][ERROR] Empty path");
+                MessageLog.trace("   Asset : " + asset.name);
+                MessageLog.trace("   Type  : " + file.type);
+                MessageLog.trace("   Role  : " + file.role);
+
+                isValid = false;
+                continue;
+            }
+
+            var f = new File(file.path);
+
+            if (!f.exists) {
+                MessageLog.trace("[Asset Validation][ERROR] Missing file");
+                MessageLog.trace("   Asset : " + asset.name);
+                MessageLog.trace("   Type  : " + file.type);
+                MessageLog.trace("   Role  : " + file.role);
+                MessageLog.trace("   Path  : " + file.path);
+
+                isValid = false;
+            } else {
+                MessageLog.trace("[Asset Validation][OK] " + asset.name + "  >  " + file.type);
+            }
+        }
+
+        return isValid;
+    };
+}
+
 function CastingImporter(){
 
-    this._last_imported_group = null
+
+
+    this._validation = new CastingValidation()
+    this._file_index = 0
+    this._next_x = 0
+    this._template = new Template({})
+
+    var self = this
     /**
      * 
      * @param {Casting} casting 
+     * @param {Template} template 
      */
-    this.import_casting = function(casting){
+    this.import_casting = function(casting,template){
+        this._template = template || new Template({})
         for(var c = 0 ; c < casting.assets.length ; c++ ){
+            if(!this._validation.validate_asset(casting.assets[c])){
+                continue
+            }
             this._import_asset(casting.assets[c])
         }
     }   
@@ -210,7 +336,10 @@ function CastingImporter(){
      */
     this._import_asset = function(asset){
         for(var c = 0 ; c < asset.files.length ; c++ ){
-            this._import_asset_file(asset.files[c])
+            var asset_group = this._import_asset_file(asset.files[c])
+            var composite = this._template.get_composite(asset.type)
+            asset_group.linkOutNode(composite)
+
         }
     }    
     /**
@@ -219,23 +348,32 @@ function CastingImporter(){
      */
     this._import_asset_file = function(asset_file){
         asset_file.debug_print()
-
-        $.scene.importTemplate(a)
-
+        return this._import_file(asset_file)
     }
 
-    /**
-     * 
-     * @param {AssetFile} asset_file 
-     */
-    this._create_asset_file_group = function(asset_file){
+    this._add_asset_group = function(asset_file){
+        var group_name = asset_file.get_file_name();
+        try {
+            var existing = $.scene.getNodeByPath("Top/" + name);
+            if (existing && existing.isGroup) {
+                return existing;
+            }
+        } catch (e) {}
+
+        var top = $.scene.getNodeByPath("Top");
+        var asset_group =  top.addGroup(group_name);
+        var backdrop = this._template.get_backdrop(asset_file.asset_type)
+        asset_group = this._move_to_backdrop(asset_group,backdrop)
+        asset_group.x = asset_group.x + this._next_x
+        this._next_x+=100
+        return asset_group
 
     }
     this._import_file = function(asset_file){
 
         var path = asset_file.path;
-        var group_name = asset_file.get_name(); // ← you renamed it earlier
-        var group = findOrCreateGroup(group_name);
+        var group_name = asset_file.get_file_name()+"_"+this._file_index; 
+        var group = this._add_asset_group(asset_file);
 
         var type = asset_file.type;
 
@@ -246,17 +384,53 @@ function CastingImporter(){
             return null;
         }
 
-        return strategy(path, group);
+        this._file_index+=1
+
+        strategy(path, group);
+
+
+
     };
 
     this._type_strategies = {
-        "TPL":function(path,group){
-            var _group = findOrCreateGroup(group)
-            return $.scene.importTemplate(tplPath,group,null,true)
+
+        "TPL": function(path, group){
+
+            var nodes = group.importTemplate(path);
+            MessageLog.trace("[TPL] imported nodes raw: " + nodes);
+
+            if (!nodes) {
+                MessageLog.trace("[TPL] ERROR Import failed: " + path);
+                return null;
+            }
+
+            // Normalize to array
+            if (!Array.isArray(nodes)) {
+                nodes = [nodes];
+            }
+
+            if (nodes.length === 0) {
+                MessageLog.trace("[TPL] ERROR Empty import result: " + path);
+                return null;
+            }
+            var firstNode = nodes[0];
+
+            MessageLog.trace("[TPL] data type : " +typeof firstNode);
+
+            // If template root is a group
+            if (node.type(firstNode.path)=="GROUP") {
+                MessageLog.trace("[TPL] linking group ...");
+                firstNode.linkOutNode(group.multiportOut)
+                group.multiportIn.linkOutNode(firstNode)
+
+            } else {
+                MessageLog.trace("[TPL] ERROR Imported non-grouped template: " + path);
+            }
+
+            return nodes;
         },
         "PSD":function(path,group){
-            var _group = findOrCreateGroup(group)
-            return _group.importPSD(path,true,true,true,true)
+            return group.importPSD(path,true,true,true,true)
         },
         "PNG":function(path,group){
             return group
@@ -274,16 +448,6 @@ function CastingImporter(){
         },
     }
 
-    function findOrCreateGroup(name) {
-        try {
-            var existing = $.scene.getNodeByPath("Top/" + name);
-            if (existing && existing.isGroup) {
-                return existing;
-            }
-        } catch (e) {}
 
-        var top = $.scene.getNodeByPath("Top");
-        return top.addGroup(name);
-    }
 }
 
