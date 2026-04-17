@@ -274,3 +274,156 @@ This will:
 2. Parse the JSON input
 3. Validate all assets
 4. Import and assemble the scene automatically (overwrite the scene !)
+
+
+## ⚙️ Installation & Configuration
+
+Follow these steps to set up the Scene Builder locally.
+
+---
+
+### 1. Create your config file
+
+Copy the template:
+
+```bash
+config/config_template.json → config/config.json
+```
+
+Edit `config.json` and configure your environment:
+
+```json
+{
+  "connector_paths": {
+    "harmony": "C:/Program Files/Toon Boom Harmony 22 Premium/win64/bin/HarmonyPremium.exe",
+    "photoshop": "C:/Program Files/Adobe/Adobe Photoshop 2024/Photoshop.exe",
+    "blender": "C:/Program Files/Blender Foundation/Blender 3.6/blender.exe",
+    "psdreader": "P:/pipeline/tools/psd_reader.bat"
+  },
+  "project_folders": {
+    "_LIBRARY_": "P:/projects/my_show/library"
+  }
+}
+```
+
+---
+
+### 2. Setup Python environment
+
+Run the installation script:
+
+```bash
+install.bat
+```
+
+This will:
+
+* create a Python virtual environment (venv)
+* install required dependencies
+
+Make sure Python is available on your system before running this step.
+
+---
+
+### 3. Install OpenHarmony
+
+Download OpenHarmony and place it inside:
+
+```bash
+lib/js/
+```
+
+⚠️ The expected folder name is:
+
+```bash
+js/OpenHarmony-0.11.0
+```
+
+Final structure:
+
+```bash
+lib/
+ └── js/
+     └── OpenHarmony-0.11.0/
+         ├── openHarmony.js
+
+
+```
+
+Make sure:
+
+* the folder name matches **exactly** (`OpenHarmony-0.11.0`)
+* the `.js` files are directly inside this folder (not nested one level deeper)
+
+👉 Refer to the included README inside `OpenHarmony-0.11.0/` for additional setup details.
+
+---
+
+### ⚠️ Common Issues
+
+* ❌ Wrong folder name (e.g. `openHarmony-master`)
+* ❌ Extra nesting (`OpenHarmony-0.11.0/OpenHarmony-0.11.0/...`)
+* ❌ Missing `.js` files in root folder
+* ❌ Library not loaded in Harmony script path
+
+If OpenHarmony is not installed correctly, functions like:
+
+```javascript
+new $.oGroupNode(...)
+```
+
+will fail.
+
+
+### 4. Library Path Mapping
+
+Your JSON files can use the `__LIBRARY__` token:
+
+```json
+"__LIBRARY__/characters/ch_A/rig.tpl"
+```
+
+This will resolve to:
+
+```bash
+P:/projects/my_show/library/characters/ch_A/rig.tpl
+```
+
+Make sure the path exists and is accessible.
+
+---
+
+### 5. (Optional) Environment Variable
+
+You can also define:
+
+```bash
+set HARMONY_LIBRARY_PATH=P:/projects/my_show/library
+```
+
+This should match your `_LIBRARY_` config.
+
+---
+
+## 🧪 Final Checklist
+
+Before running:
+
+* ✅ `config.json` is set correctly
+* ✅ `install.bat` has been executed
+* ✅ virtual environment is created
+* ✅ OpenHarmony is installed in `lib/js/`
+* ✅ library path exists
+* ✅ Harmony runs via CLI
+
+---
+
+## 🚀 Ready to Build
+
+You can now run the Scene Builder via CLI:
+
+```bash
+harmonyadapter.bat -r build_scene -sp "%scene_path%" -ji "%json_input_path%"
+```
+
+---

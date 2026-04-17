@@ -4,5 +4,8 @@
         "photoshop":"my/path/to/soft.exe",
         "blender":"my/path/to/soft.exe",
         "psdreader":"my/path/to/soft.bat"
+    },
+    "project_folders":{
+        "_LIBRARY_":"tpl/library"
     }
 }
