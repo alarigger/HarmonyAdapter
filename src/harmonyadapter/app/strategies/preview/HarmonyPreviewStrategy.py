@@ -1,4 +1,4 @@
-from app.strategies.PreviewStrategy import PreviewStrategy
+from app.strategies.preview.PreviewStrategy import PreviewStrategy
 from app.HarmonyAdapterRequest import HarmonyAdapterRequest,InvalidPreviewRequest
 from app.HarmonyAdapterRequestCompleter import HarmonyAdapterRequestCompleter
 from app.integrations.harmony.HarmonyConnector import HarmonyConnector

@@ -5,7 +5,7 @@ setlocal
 set "SCRIPT_DIR=%~dp0"
 
 :: Call template next to this file
-call "%SCRIPT_DIR%run_preview_test_template_with_cadres.bat" ^
+call "%SCRIPT_DIR%run_build_scene_test_template.bat" ^
     preview_shot ^
     multishot_123 ^
     psd ^

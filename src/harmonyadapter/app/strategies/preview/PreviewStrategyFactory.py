@@ -1,8 +1,8 @@
 from app.model.Software import Software
-from app.strategies.PreviewStrategy import PreviewStrategy
-from app.strategies.HarmonyPreviewStrategy import HarmonyPreviewStrategy
-from app.strategies.BlenderPreviewStrategy import BlenderPreviewStrategy
-from app.strategies.NullPreviewStrategy import NullPreviewStrategy
+from app.strategies.preview.PreviewStrategy import PreviewStrategy
+from app.strategies.preview.HarmonyPreviewStrategy import HarmonyPreviewStrategy
+from app.strategies.preview.BlenderPreviewStrategy import BlenderPreviewStrategy
+from app.strategies.preview.NullPreviewStrategy import NullPreviewStrategy
 
 class PreviewStrategyFactory:
 
