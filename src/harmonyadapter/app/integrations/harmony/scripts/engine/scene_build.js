@@ -65,14 +65,14 @@ function Template(data) {
 
         if (!path) {
             MessageLog.trace("[Template] get_composite: unknown type '" + asset_type + "' → fallback used");
-            return this.final_composite_path;
+            return  $.scene.getNodeByPath(this.final_composite_path);
         }
 
-        return path;
+        return $.scene.getNodeByPath(path);
     };
     this.get_backdrop = function(asset_type){
 
-        var all_brackdrops = backdrops("Top")
+        var all_brackdrops =  Backdrop.backdrops("Top")
         MessageLog.trace(all_brackdrops)
         if (!asset_type) {
             MessageLog.trace("[Template] get_backdrop: missing type");
@@ -230,8 +230,6 @@ function SceneBuilDataFactory(){
 
 function SceneBuilder() {
 
-
-
     this.build = function(scene_build_data) {
         MessageLog.trace("[SceneBuild] importing template ")
         this._import_template(scene_build_data.template)
@@ -313,6 +311,7 @@ function CastingImporter(){
     this._validation = new CastingValidation()
     this._file_index = 0
     this._next_x = 0
+    this._next_y = 0
     this._template = new Template({})
 
     var self = this
@@ -323,11 +322,18 @@ function CastingImporter(){
      */
     this.import_casting = function(casting,template){
         this._template = template || new Template({})
+        var type_table = {}
         for(var c = 0 ; c < casting.assets.length ; c++ ){
+            var asset = casting.assets[c]
             if(!this._validation.validate_asset(casting.assets[c])){
                 continue
             }
-            this._import_asset(casting.assets[c])
+            var asset_group = this._import_asset(asset)
+            if(type_table[asset.type]==undefined){
+                type_table[asset.type]= []
+            }
+            type_table[asset.type].push(asset_group)
+            // use later for backdrop grouping 
         }
     }   
     /**
@@ -335,10 +341,10 @@ function CastingImporter(){
      * @param {Asset} asset 
      */
     this._import_asset = function(asset){
+        
         for(var c = 0 ; c < asset.files.length ; c++ ){
-            var asset_group = this._import_asset_file(asset.files[c])
             var composite = this._template.get_composite(asset.type)
-            asset_group.linkOutNode(composite)
+            var asset_group = this._import_asset_file(asset.files[c],composite)
 
         }
     }    
@@ -346,50 +352,67 @@ function CastingImporter(){
      * 
      * @param {AssetFile} casting 
      */
-    this._import_asset_file = function(asset_file){
+    this._import_asset_file = function(asset_file,composite){
         asset_file.debug_print()
-        return this._import_file(asset_file)
+        return this._import_file(asset_file,composite)
     }
 
-    this._add_asset_group = function(asset_file){
+    this._add_asset_group = function(asset_file,composite){
         var group_name = asset_file.get_file_name();
         try {
-            var existing = $.scene.getNodeByPath("Top/" + name);
-            if (existing && existing.isGroup) {
+            var existing = $.scene.getNodeByPath("Top/" + group_name);
+            if (existing && node.type(existing.path)=="GROUP") {
                 return existing;
             }
         } catch (e) {}
-
         var top = $.scene.getNodeByPath("Top");
         var asset_group =  top.addGroup(group_name);
-        var backdrop = this._template.get_backdrop(asset_file.asset_type)
-        asset_group = this._move_to_backdrop(asset_group,backdrop)
-        asset_group.x = asset_group.x + this._next_x
-        this._next_x+=100
-        return asset_group
+
+        return this._place_asset_group(asset_group,asset_file,composite)
 
     }
-    this._import_file = function(asset_file){
+
+    this._place_asset_group = function(group,asset_file,composite){
+        if(this._next_x==0){
+            group.y = composite.y -500
+        }
+        group.x = group.x + this._next_x
+        group.y= this._next_y
+        this._next_x+=100
+        this._next_y=group.y
+        this._add_asset_backdrop(group,asset_file)
+        return group
+    }
+    this._add_asset_backdrop = function(group,asset_file){
+        //wip
+    }
+
+    this._move_to_backdrop = function(group,backdrop){
+        // wip 
+    }   
+
+    this._import_file = function(asset_file,composite){
 
         var path = asset_file.path;
         var group_name = asset_file.get_file_name()+"_"+this._file_index; 
-        var group = this._add_asset_group(asset_file);
+        var group = this._add_asset_group(asset_file,composite);
 
         var type = asset_file.type;
 
-        var strategy = this._type_strategies[type];
+        var import_strategy = this._type_strategies[type];
 
-        if (!strategy) {
+        if (!import_strategy) {
             MessageLog.trace("[SceneBuilder] No import strategy for type: " + type);
             return null;
         }
+        
+        import_strategy(path, group);
 
+        group.linkOutNode(composite)
         this._file_index+=1
 
-        strategy(path, group);
-
-
-
+        return group
+        
     };
 
     this._type_strategies = {
