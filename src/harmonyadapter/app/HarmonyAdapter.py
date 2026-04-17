@@ -1,6 +1,6 @@
 from typing import List,Dict,Callable
 import json
-from app.HarmonyAdapter import HarmonyAdapterRequest
+from app.HarmonyAdapterRequest import HarmonyAdapterRequest
 from app.strategies.preview.PreviewStrategyFactory import PreviewStrategyFactory
 from app.strategies.scenebuild.SceneBuildStrategyFactory import SceneBuildStrategyFactory
 import copy

@@ -26,18 +26,16 @@ def build_parser() -> ArgumentParser:
     )
     parser.add_argument(
         "-b", "--bg_path",
-        required=True,
         help="Path to the input Bg file",
     )    
-    parser.add_argument(
-        "-x", "--xstage_path",
-        required=True,
-        help="Path to the input xstage file",
-    )
-
+    #obsolete
     parser.add_argument(
         "-sf", "--shot_file",
         help="Shot file (xstage or blender scene) where to place the bg",
+    )      
+    parser.add_argument(
+        "-sp", "--scene_path",
+        help="scene file (xstage or blender scene) ",
     )    
     parser.add_argument(
         "-cad", "--cadre",

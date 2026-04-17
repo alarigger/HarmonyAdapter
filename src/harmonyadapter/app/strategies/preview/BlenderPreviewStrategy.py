@@ -1,6 +1,6 @@
 
 import subprocess
-from app.strategies.PreviewStrategy import PreviewStrategy
+from app.strategies.preview.PreviewStrategy import PreviewStrategy
 from app.HarmonyAdapterRequest import HarmonyAdapterRequest
 
 class BlenderPreviewStrategy(PreviewStrategy):

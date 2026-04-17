@@ -1,56 +1,48 @@
 from app.strategies.scenebuild.SceneBuildStrategy import SceneBuildStrategy
-from app.HarmonyAdapterRequest import HarmonyAdapterRequest,InvalidPreviewRequest
+from app.HarmonyAdapterRequest import HarmonyAdapterRequest,InvalidHRequest
 from app.HarmonyAdapterRequestCompleter import HarmonyAdapterRequestCompleter
 from app.integrations.harmony.HarmonyConnector import HarmonyConnector
+from app.ProjectPaths import ProjectPaths
 from dataclasses import replace, asdict
 from psd_tools import PSDImage
 import os
 import tempfile
 import uuid
+import json
+
+class InvalidSceneBuildRequest(Exception):
+    pass
+
 
 class HarmonySceneBuildStrategy(SceneBuildStrategy):
 
     def build_scene(self, request: HarmonyAdapterRequest) -> str:
-        self._validate_request(request)
         
-        completed_request = HarmonyAdapterRequestCompleter().complete(request)
-
-        bg = completed_request.bg
-
+        self._validate_request(request)
         harmony = HarmonyConnector()
-        scene_path = completed_request.shot.path
-
+        scene_path = request.scene_path
+        print(os.getenv("HARMONY_LIBRARY_PATH"))
         args = {
-            "bg_png_path":self._convert_psd_to_png(bg.path),
-            "bg": asdict(completed_request.bg),
-            "shot": asdict(completed_request.shot)
+            "json_input_path": request.json_input_path
         }
 
-        harmony.run_script(scene_path, "apply_bg_cadre", args)
-        harmony.render(scene_path,completed_request.render.output_path)
+        harmony.run_script(scene_path, "build_scene", args)
 
-        return "preview_generated"
+        return "scene_built"
 
     def _validate_request(self, request: HarmonyAdapterRequest):
 
         if request is None:
-            raise InvalidPreviewRequest("Preview request cannot be None")
+            raise InvalidSceneBuildRequest("Scene request cannot be None")
 
-        if request.shot is None or not request.shot.path:
-            raise InvalidPreviewRequest("Shot or shot path is missing")
+        if request.scene_path is None:
+            raise InvalidSceneBuildRequest("scene_path or shot path is missing") 
 
-        if request.bg is None or not request.bg.path:
-            raise InvalidPreviewRequest("Background or background path is missing")
-
+        if request.json_input_path is None:
+            raise InvalidSceneBuildRequest("json_input_path is missing")
+        '''
         if request.render is None or not request.render.output_path:
-            raise InvalidPreviewRequest("Render or render output path is missing")
+            raise InvalidHRequest("Render or render output path is missing")
+        '''
         
-    def _convert_psd_to_png(self, psd_path: str) -> str:
-
-
-        temp_dir = tempfile.gettempdir()
-        png_path = os.path.join(temp_dir, f"{uuid.uuid4()}.png")
-        psd = PSDImage.open(psd_path)
-        psd.composite().save(png_path)
-
-        return png_path
+        

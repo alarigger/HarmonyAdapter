@@ -2,13 +2,14 @@ from app.model.BG import BG,BGFactory
 from app.model.Cadre import Cadre,CadreFactory
 from app.model.Shot import Shot
 from app.model.Render import Render
+from app.model.Build import Build
 from app.model.Camera import Camera
 from app.model.Software import Software
 from typing import Optional
 from dataclasses import dataclass, field
 from typing import Optional
 
-class InvalidPreviewRequest(Exception):
+class InvalidHRequest(Exception):
     pass
 
 @dataclass(frozen=True)
@@ -23,6 +24,10 @@ class HarmonyAdapterRequest:
     shot: Optional['Shot'] = None
     render: Optional['Render'] = None
     json_path: Optional[str] = None
+    json_input_path: Optional[str] = None
+    output_path:Optional[str] = None
+    build:Optional['Build'] = None
+    scene_path:Optional[str] = None
 
     def __str__(self) -> str:
         """
@@ -58,16 +63,26 @@ class HarmonyAdapterRequest:
             lines.append(f"    Output Path : {self.render.output_path or 'None'}")
             lines.append(f"    Output Type : {self.render.output_type or 'None'}")
         else:
-            lines.append("  Render : None")
+            lines.append("  Render : None")   
+                 
+        # Build
+        if self.render:
+            lines.append(f"  Build:")
+            lines.append(f"    Output Path : {self.render.output_path or 'None'}")
+        else:
+            lines.append("  Build : None")
 
         # JSON Path
         lines.append(f"  JSON Path : {self.json_path or 'None'}")
+        lines.append(f"  JSON INPUT Path : {self.json_input_path or 'None'}")
 
         return "\n".join(lines)
     
     def get_software(self)->Software:
+        if self.scene_path:
+            return Software.from_file(self.scene_path)
         if self.shot and self.shot.path:
-            return Software.from_file(self.shot.path)
+            return Software.from_file(self.shot.path)        
         return Software.UNKNOWN
     
 class HarmonyAdapterRequestFactory():
@@ -93,6 +108,8 @@ class HarmonyAdapterRequestFactory():
             -cad, --cadre
             -cam, --camera
             -j, --json_path
+            -x, -- xstage_
+            -ij, --json_input_path
         """
         # -------- Request name --------
         name = cli_args.request_name
@@ -150,9 +167,23 @@ class HarmonyAdapterRequestFactory():
 
             if cli_args.output_type:
                 render.output_type = cli_args.output_type
+                
+                
+        build = None
+        # -------- Build --------
+        if cli_args.output_path:
+            build = Build()
+            build.output_path = cli_args.output_path
+            build.json = cli_args.json_input_path if cli_args.json_input_path else None
 
         # -------- JSON --------
-        json_path = cli_args.json_path if cli_args.json_path else None
+        json_path = cli_args.json_path if cli_args.json_path else None        
+        
+        # --------INPUT JSON --------
+        json_input_path = cli_args.json_input_path if cli_args.json_input_path else None
+        
+        # --------INPUT SCENE --------
+        scene_path = cli_args.scene_path if cli_args.scene_path else None
 
         # Single immutable construction
         return HarmonyAdapterRequest(
@@ -161,6 +192,9 @@ class HarmonyAdapterRequestFactory():
             shot=shot,
             render=render,
             json_path=json_path,
+            json_input_path=json_input_path,
+            build=build,
+            scene_path=scene_path
         )
 
         

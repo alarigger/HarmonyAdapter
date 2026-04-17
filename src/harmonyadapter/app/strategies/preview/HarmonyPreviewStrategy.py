@@ -1,7 +1,9 @@
 from app.strategies.preview.PreviewStrategy import PreviewStrategy
-from app.HarmonyAdapterRequest import HarmonyAdapterRequest,InvalidPreviewRequest
+from app.HarmonyAdapterRequest import HarmonyAdapterRequest,InvalidHRequest
 from app.HarmonyAdapterRequestCompleter import HarmonyAdapterRequestCompleter
 from app.integrations.harmony.HarmonyConnector import HarmonyConnector
+from app.ProjectPaths import ProjectPaths
+
 from dataclasses import replace, asdict
 from psd_tools import PSDImage
 import os
@@ -12,8 +14,7 @@ class HarmonyPreviewStrategy(PreviewStrategy):
 
     def generate_preview(self, request: HarmonyAdapterRequest) -> str:
         self._validate_request(request)
-        
-        completed_request = HarmonyAdapterRequestCompleter().complete(request)
+
 
         bg = completed_request.bg
 
@@ -34,16 +35,16 @@ class HarmonyPreviewStrategy(PreviewStrategy):
     def _validate_request(self, request: HarmonyAdapterRequest):
 
         if request is None:
-            raise InvalidPreviewRequest("Preview request cannot be None")
+            raise InvalidHRequest("Preview request cannot be None")
 
         if request.shot is None or not request.shot.path:
-            raise InvalidPreviewRequest("Shot or shot path is missing")
+            raise InvalidHRequest("Shot or shot path is missing")
 
         if request.bg is None or not request.bg.path:
-            raise InvalidPreviewRequest("Background or background path is missing")
+            raise InvalidHRequest("Background or background path is missing")
 
         if request.render is None or not request.render.output_path:
-            raise InvalidPreviewRequest("Render or render output path is missing")
+            raise InvalidHRequest("Render or render output path is missing")
         
     def _convert_psd_to_png(self, psd_path: str) -> str:
 

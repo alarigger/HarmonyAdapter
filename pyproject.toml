@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "HarmonyAdapter"
 version = "0.1.0"
-description = "provide a pipeline pyhton interface for harmony scene build and export"
+description = "Provide a pipeline pyhton interface for harmony scene build and export"
 requires-python = ">=3.9"
 
 dependencies = [

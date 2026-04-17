@@ -3,6 +3,12 @@
         "library":"",
         "templates":""
     },
+    "input_scene_file":{
+        "path": {
+            "absolute":"",
+            "relative":""
+        }        
+    },
     "context": {
         "project": "myProject",
         "task_name": "animation",
@@ -16,7 +22,7 @@
         "name": "template_shot",
         "path": {
             "absolute":"",
-            "relative":"",
+            "relative":""
         }
     },
     "casting": {
@@ -26,25 +32,26 @@
                 "name": "ch_A",
                 "type": "Character",
                 "subType": "mainpack",
-                "import": [
+                "files":[
                     {
                         "type": "TPL",
+                        "role":"rig",
                         "path": {
                             "absolute": "",
                             "relative": ""
                         }
                     }
                 ]
-            }
-
+            },
             {
                 "id": 2,
                 "name": "ch_B",
                 "type": "Character",
                 "subType": "mainpack",
-                "import": [
+                "files":[
                     {
                         "type": "TPL",
+                        "role":"rig",
                         "path": {
                             "absolute": "",
                             "relative": ""
@@ -57,39 +64,42 @@
                 "name": "ch_C",
                 "type": "Character",
                 "subType": "secondary",
-                "import": [
+                "files":[
                     {
                         "type": "TPL",
+                        "role":"rig",
                         "path": {
                             "absolute": "",
                             "relative": ""
                         }
                     }
                 ]
-            }
+            },
             {
                 "id": 4,
                 "name": "pr_A",
                 "type": "Prop",
                 "subType": "mainpack",
-                "import": [
+                "files":[
                     {
                         "type": "TPL",
+                        "role":"rig",
                         "path": {
                             "absolute": "",
                             "relative": ""
                         }
                     }
                 ]
-            }
+            },
             {
                 "id": 5,
                 "name": "bg_A",
                 "type": "Background",
                 "subType": "mainpack",
-                "import": [
+                "files":[
                     {
                         "type": "PSD",
+                        "role":"background",
                         "path": {
                             "absolute": "",
                             "relative": ""
@@ -98,8 +108,5 @@
                 ]
             }
         ]
-    },
-    "library": {
-        "folder_path":
     }
 }
