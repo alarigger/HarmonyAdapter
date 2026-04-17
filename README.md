@@ -240,7 +240,7 @@ With a single JSON file, you can:
 
 ## 🖥️ CLI Usage
 
-This script is designed to run in batch mode via Harmony’s command-line adapter.
+This script is designed to run in batch mode a central bat launcher.
 
 Example:
 
@@ -273,4 +273,4 @@ This will:
 1. Open or create the scene at `scene_path`
 2. Parse the JSON input
 3. Validate all assets
-4. Import and assemble the scene automatically
+4. Import and assemble the scene automatically (overwrite the scene !)
