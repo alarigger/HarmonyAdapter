@@ -1,0 +1,50 @@
+[
+    {
+        "name": "cadre_SH001",
+        "path": null,
+        "frame": {
+            "x": 252,
+            "y": 1474,
+            "width": 1071,
+            "height": 602
+        },
+        "background": {
+            "x": -1473,
+            "y": 328,
+            "width": 3450,
+            "height": 2293
+        }
+    },
+    {
+        "name": "cadre_SH002",
+        "path": null,
+        "frame": {
+            "x": 970,
+            "y": 805,
+            "width": 1065,
+            "height": 600
+        },
+        "background": {
+            "x": -755,
+            "y": -341,
+            "width": 3450,
+            "height": 2293
+        }
+    },
+    {
+        "name": "cadre_SH003",
+        "path": null,
+        "frame": {
+            "x": 2091,
+            "y": 242,
+            "width": 1068,
+            "height": 601
+        },
+        "background": {
+            "x": 366,
+            "y": -904,
+            "width": 3450,
+            "height": 2293
+        }
+    }
+]

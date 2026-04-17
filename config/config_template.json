@@ -1,0 +1,8 @@
+{
+    "connector_paths":{
+        "harmony":"my/path/to/soft.exe",
+        "photoshop":"my/path/to/soft.exe",
+        "blender":"my/path/to/soft.exe",
+        "psdreader":"my/path/to/soft.bat"
+    }
+}

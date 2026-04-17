@@ -14,7 +14,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -187,6 +186,7 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file. However, if you prefer, 
 #  you could uncomment the following to ignore the entire vscode folder
 # .vscode/
+.vscode/settings.json
 
 # Ruff stuff:
 .ruff_cache/
@@ -205,3 +205,13 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+/test/output/json
+/tests/output/json
+/tests/output/xstage
+/tests/output/blend
+src/HarmonyAdapter/app/integrations/config.json
+/tests/output/video
+/src/HarmonyAdapter/app/integrations/harmony/scripts/OpenHarmony-0.11.0
+config/config.json
+/lib/js
+/.github/agents/anim-td.agent.md
