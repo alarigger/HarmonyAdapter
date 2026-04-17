@@ -1,13 +1,8 @@
 from typing import List,Dict,Callable
 import json
-from app.HarmonyAdapterRequest import HarmonyAdapterRequest
-from app.model.BG import BG
-from app.model.Shot import Shot
-from app.model.Render import Render
-from app.model.Camera import Camera
-from app.model.Software import Software
-from app.strategies.PreviewStrategy import PreviewStrategy
-from app.strategies.PreviewStrategyFactory import PreviewStrategyFactory
+from app.HarmonyAdapter import HarmonyAdapterRequest
+from app.strategies.preview.PreviewStrategyFactory import PreviewStrategyFactory
+from app.strategies.scenebuild.SceneBuildStrategyFactory import SceneBuildStrategyFactory
 import copy
 import os 
 
@@ -81,8 +76,23 @@ def preview_shot(self:HarmonyAdapter,request:HarmonyAdapterRequest)->HarmonyAdap
     report = HarmonyAdapterRepport()
     factory = PreviewStrategyFactory()
 
-    preview_strategy = factory.get_strategy(request.get_software())
-    temp_video = preview_strategy.generate_preview(request)
+    strategy = factory.get_strategy(request.get_software())
+    temp_video = strategy.generate_preview(request)
+    
+    return report
+
+    ...
+    
+@HarmonyAdapter._register_handler("build_scene")
+def preview_shot(self:HarmonyAdapter,request:HarmonyAdapterRequest)->HarmonyAdapterRepport:
+    '''
+        build scene for animation 
+    '''
+    report = HarmonyAdapterRepport()
+    factory = SceneBuildStrategyFactory()
+
+    strategy = factory.get_strategy(request.get_software())
+    new_scene = strategy.build_scene(request)
     
     return report
 
