@@ -374,7 +374,7 @@ function CastingImporter(){
 
     this._place_asset_group = function(group,asset_file,composite){
         if(this._next_x==0){
-            group.y = composite.y -500
+            group.y = composite.y +500
         }
         group.x = group.x + this._next_x
         group.y= this._next_y
