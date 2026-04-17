@@ -6,7 +6,7 @@ set "SCRIPT_DIR=%~dp0"
 
 :: Call template next to this file
 call "%SCRIPT_DIR%run_build_scene_test_template.bat" ^
-    preview_shot ^
+    build_scene ^
     multishot_123 ^
     psd ^
     SH001_camera_rest ^

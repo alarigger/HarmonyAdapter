@@ -5,7 +5,7 @@ setlocal
 :: READ ARGUMENTS
 :: -------------------------
 set "request_name=%~1"
-set "bg_type=%~2"
+set "json_input=%~2"
 set "bg_format=%~3"
 set "shot_type=%~4"
 set "shot_format=%~5"
