@@ -1,6 +1,10 @@
 /*
 
-    require class AssetGroup AssetGroupFactory and ImportStrategiesRegister
+    require class 
+    AssetGroup 
+    AssetGroupFactory
+    ImportStrategiesRegister
+    DeploymentStrategiesRegister
 
 */
 
@@ -399,7 +403,7 @@ function CastingImporter(){
         var asset_groups = []
         for(var c = 0 ; c < asset.files.length ; c++ ){
             var asset_file_group = this._import_asset_file(asset,asset.files[c])
-            asset_file_groups.push(asset_file_group)
+            asset_groups.push(asset_file_group)
         }
         return asset_groups
     }    
@@ -418,13 +422,11 @@ function CastingImporter(){
         // show the asset file data 
         asset_file.debug_print()
 
-        // create the asset group that will recieve the nodes 
+        // create the asset group that will recieve the nodes and summeraise asset and asset_file data in  one object 
         var asset_group = this._create_asset_group(asset,asset_file);
 
         // place the group on the rigth back drop nears its friends 
         var placed_group = this._place_asset_group(asset_group)
-
-        this._add_asset_backdrop(placed_group)
 
         // search for the import_strategy matching the asset file type 
         const type = asset_file.type;
@@ -432,8 +434,11 @@ function CastingImporter(){
         // import nodes inside the group 
         var imported_nodes = import_strategy_register.apply(placed_group)
 
+        // deploy the node 
+        var deployed_group = deployment_strategy_register.apply(placed_group,this)
+
         // like the group output to the given composite node 
-        this._link_asset_group(placed_group)
+        this._link_asset_group(deployed_group)
 
         this._file_index+=1
 
@@ -484,6 +489,10 @@ function CastingImporter(){
         return asset_group
     }
 
+    this._expand_asset_group = function(asset_group){
+
+    }
+
 
 
 
@@ -494,7 +503,7 @@ function CastingImporter(){
      */
     this._link_asset_group=function(asset_group){
         const composite = this._template.get_composite(asset_group.get_asset_type())
-        group.linkOutNode(composite)
+        asset_group.group.linkOutNode(composite)
         return asset_group
     }
 

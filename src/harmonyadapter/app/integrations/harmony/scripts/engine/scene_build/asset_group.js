@@ -11,7 +11,7 @@ function AssetGroupFactory(){
      * @returns {AssetGroup}
      */
     this.create = function(group,asset,asset_file){
-        return new AssetGroup(group,asset,asset_file)
+        return new AssetGroup(group,asset,asset_file) // wip validate
     }
 
 }
@@ -30,7 +30,7 @@ function AssetGroup(group,asset,asset_file){
     this.group = group|| null
     this.node_table = {}
     this.node_list = []
-    this.register_node(group,"group")
+    this.backdrop = null
 
     //context data
     this.asset = asset || null
@@ -60,10 +60,15 @@ function AssetGroup(group,asset,asset_file){
      * @param {$.oNode} n 
      * @param {string} role 
      */
-    this.register_node = function(n, role){
+    this.register_node = function(_node, role){
         var role = role || "main"
-        this.node_table[role] = n
-        this.node_list.push(n)
+        this.node_table[role] = _node
+        if(this.node_list.indexOf(_node)==-1){
+            this.node_list.push(_node)
+        }
+    }
+    if(this.group){
+        this.register_node(group,"group")
     }
 
     /**
@@ -73,6 +78,20 @@ function AssetGroup(group,asset,asset_file){
      */
     this.get_node = function(role){
         return this.node_table[role]
+    }    
+    /**
+     * 
+     * @returns {$.oNode[]} 
+     */ 
+    this.get_outside_nodes = function(){
+        return this.node_list
+    }       
+    /**
+     * 
+     * @returns {$.oNode[]} 
+     */ 
+    this.get_inside_nodes = function(){
+        return this.group.children
     }    
 
     /**
@@ -93,12 +112,12 @@ function AssetGroup(group,asset,asset_file){
         var minY = Number.MAX_VALUE
 
         for (var role in this.node_table){
-            var n = this.node_table[role]
-            var y = node.coordY(n)
+            var _node = this.node_table[role]
+            var y = node.coordY(_node)
 
             if (y < minY){
                 minY = y
-                highest = n
+                highest = _node
             }
         }
 
@@ -115,12 +134,12 @@ function AssetGroup(group,asset,asset_file){
         var maxY = -Number.MAX_VALUE
 
         for (var role in this.node_table){
-            var n = this.node_table[role]
-            var y = node.coordY(n)
+            var _node = this.node_table[role]
+            var y = node.coordY(_node)
 
             if (y > maxY){
                 maxY = y
-                lowest = n
+                lowest = _node
             }
         }
 
@@ -187,12 +206,34 @@ function AssetGroup(group,asset,asset_file){
     }
 
     this.add_peg = function(_name){
-
+        var peg = this.group.parent.addNode("PEG", this.group.name+'-P');
+        peg.linkOutNode(this.group);
+        peg.centerAbove(this.group);
+        this.register_node(peg,"head")
+        this.register_node(peg,"peg")
+        return this
     }   
     this.add_display = function(_name){
+        var display = this.group.parent.addNode("DISPLAY", this.group.name+'-D');
+        this.group.linkOutNode(display);
+        display.centerBelow(this.group);
+        this.register_node(display,"display")
+        return this
 
     } 
     this.add_composite = function(_name){
+        var comp = this.group.parent.addNode("COMPOSITE", this.group.name+'-C');
+        this.group.linkOutNode(comp);
+        comp.centerBelow(this.group);
+        this.register_node(comp,"foot")
+        this.register_node(comp,"composite")
+        return this
+    }
 
+    this.add_backdrop = function(color){
+        var color = color || new $.oColorValue("#336600ff")
+        MessageLog.trace(this.get_outside_nodes())
+        var backdrop =this.group.parent.addBackdropToNodes(this.get_outside_nodes(), this.get_asset_name(), "",color)
+        this.backdrop = backdrop
     }
 }

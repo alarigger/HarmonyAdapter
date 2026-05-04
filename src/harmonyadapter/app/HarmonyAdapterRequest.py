@@ -23,7 +23,7 @@ class HarmonyAdapterRequest:
     bg: Optional['BG'] = None
     shot: Optional['Shot'] = None
     render: Optional['Render'] = None
-    cadre:Optional['Cadre']
+    cadre:Optional['Cadre'] = None
     json_path: Optional[str] = None
     json_input_path: Optional[str] = None
     output_path:Optional[str] = None

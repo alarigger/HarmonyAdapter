@@ -2,6 +2,7 @@
 /*
              
                 IMPORTATION STRATEGIES 
+                Describe what is happening inside the asset group .. importing tpl , layers ect... 
 
 */
 
@@ -22,13 +23,13 @@ function ImportStrategiesRegister(){
      * @returns {$.oNode[]}
      */
     this.apply = function(asset_group){
-        const name = asset_group.get_file_type()
-        if (!this._table[name]){
-            MessageLog.trace("Import Strategy not found: " + name)
-            return []
+        const file_type = asset_group.get_file_type()
+        if (!this._table[file_type]){
+            MessageLog.trace("Import Strategy not found: " + file_type)
+            return asset_group
         }
         
-        return this._table[name](asset_group)
+        return this._table[file_type](asset_group)
     }
 }
 var import_strategy_register = new ImportStrategiesRegister()
@@ -36,8 +37,8 @@ var import_strategy_register = new ImportStrategiesRegister()
 
 /**
  * Import TPL
-     * @param {AssetGroup} asset_group
- * @returns {$.oNode[]}
+ * @param {AssetGroup} asset_group
+ * @returns {AssetGroup}
  */
 function _import_strategy_tpl(asset_group){
 
@@ -70,13 +71,15 @@ function _import_strategy_tpl(asset_group){
         MessageLog.trace("[TPL] linking group ...");
         firstNode.linkOutNode(group.multiportOut)
         group.multiportIn.linkOutNode(firstNode)
-
+        // todo ungroup firstNode
     } else {
         MessageLog.trace("[TPL] Imported non-grouped TPL: " + path);
         MessageLog.trace("[TPL] keeping imported node graph as-is (no forced relink).");
     }
 
-    return nodes;
+
+
+    return asset_group
 }
 import_strategy_register.add("TPL",_import_strategy_tpl)
 
@@ -87,13 +90,14 @@ import_strategy_register.add("TPL",_import_strategy_tpl)
 /**
  * Import PSD 
  * @param {AssetGroup} asset_group
- * @returns {$.oNode[]}
+ * @returns {AssetGroup}
  */
 function _import_stragy_psd(asset_group){
 
     const path = asset_group.get_path()
     var group = asset_group.group
 
+    return asset_group
     return group.importPSD(path,true,true,true,true)
 }
 import_strategy_register.add("PSD",_import_stragy_psd)
@@ -103,7 +107,7 @@ import_strategy_register.add("PSD",_import_stragy_psd)
 /**
  * 
  * @param {AssetGroup} asset_group
- * @returns {$.oNode[]}
+ * @returns {AssetGroup}
  *
  * XSTAGE : import d'un puppet Harmony depuis un fichier .xstage extrait.
  *
@@ -168,7 +172,7 @@ import_strategy_register.add("XSTAGE",_import_strategy_xstage)
 /**
  * Import PNG
  * @param {AssetGroup} asset_group
- * @returns {$.oNode[]}
+ * @returns {AssetGroup}
  */
 function _import_strategy_png(asset_group){
 
@@ -183,7 +187,7 @@ import_strategy_register.add("PNG", _import_strategy_png)
 /**
  * Import PNG SEQUENCE
  * @param {AssetGroup} asset_group
- * @returns {$.oNode[]}
+ * @returns {AssetGroup}
  */
 function _import_strategy_png_sequence(asset_group){
 
@@ -199,7 +203,7 @@ import_strategy_register.add("PNG_SEQUENCE", _import_strategy_png_sequence)
 /**
  * Import PNG AS LAYERS
  * @param {AssetGroup} asset_group
- * @returns {$.oNode[]}
+ * @returns {AssetGroup}
  */
 function _import_strategy_png_layers(asset_group){
 
@@ -214,7 +218,7 @@ import_strategy_register.add("PNG_AS_LAYERS", _import_strategy_png_layers)
 /**
  * Import VIDEO 
  * @param {AssetGroup} asset_group
- * @returns {$.oNode[]}
+ * @returns {AssetGroup}
  */
 function _import_strategy_video(asset_group){
 
