@@ -1,6 +1,7 @@
 from typing import List,Dict,Callable
 import json
 from app.HarmonyAdapterRequest import HarmonyAdapterRequest
+from app.HarmonyAdapterRequestCompleter import HarmonyAdapterRequestCompleter
 from app.strategies.preview.PreviewStrategyFactory import PreviewStrategyFactory
 from app.strategies.scenebuild.SceneBuildStrategyFactory import SceneBuildStrategyFactory
 import copy
@@ -33,7 +34,7 @@ class HarmonyAdapter():
         ...
         
     def complete_request(self,request:HarmonyAdapterRequest)->HarmonyAdapterRequest:
-        completed_request = copy.deepcopy(request)
+        completed_request = HarmonyAdapterRequestCompleter().complete(request)
         return completed_request
 
     def treat(self,request:HarmonyAdapterRequest)->HarmonyAdapterRepport:
@@ -57,6 +58,8 @@ class HarmonyAdapter():
             cls._registry[name] = func
             return func
         return decorator
+    
+
     
     
 
@@ -90,9 +93,16 @@ def build_scene_handler(self:HarmonyAdapter,request:HarmonyAdapterRequest)->Harm
     '''
     report = HarmonyAdapterRepport()
     factory = SceneBuildStrategyFactory()
-
+    
     strategy = factory.get_strategy(request.get_software())
-    new_scene = strategy.build_scene(request)
+    
+    completed_request = self.complete_request(request)
+    print("------------COMPLETED REQUEST----------")
+    print(completed_request)
+    
+    return report
+    
+    new_scene = strategy.build_scene(completed_request)
 
     return report
 

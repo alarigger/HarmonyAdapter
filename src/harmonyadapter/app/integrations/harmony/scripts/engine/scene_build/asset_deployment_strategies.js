@@ -8,11 +8,7 @@
 */
 
 
-const backdrop_asset_type_color_table = {
-    Character:new $.oColorValue("#1ca062"),
-    Prop:new $.oColorValue("#d8a73e"),
-    FX:new $.oColorValue("#d819af")
-}
+
 
 function DeploymentStrategiesRegister(){
 
@@ -52,10 +48,14 @@ var deployment_strategy_register = new DeploymentStrategiesRegister()
  */
 function _deployment_strategy_non_bg_asset(asset_group,casting_importer){
 
+    const backdrop_asset_type_color_table = {
+        Character:new $.oColorValue("#1ca062"),
+        Prop:new $.oColorValue("#d8a73e"),
+        FX:new $.oColorValue("#d819af")
+    }
 
     asset_group.add_peg()
     asset_group.add_display()
-    asset_group.add_composite()
     var backdrop_color = backdrop_asset_type_color_table[asset_group.get_asset_type()] || $.oColorValue("#336600ff")
     asset_group.add_backdrop(backdrop_color)
 

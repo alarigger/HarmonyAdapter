@@ -1,70 +1,137 @@
-from app.model.Cadre import Cadre
+from app.model.Cadre import Cadre,Rect
 from app.integrations.psdreader.PSDReaderConnector import PSDReaderConnector
+import re
+from psd_tools import PSDImage
+from typing import List
+import os
+import re
 
+STUDIO_CONVENTIONS= {
+    "shot_patterns": [
+        r"^SH\d+",
+        r"^SHOT_\d+",
+        r".*_SH\d+",
+        r"^SQ\d+_SH\d+"
+    ]
+}
 
 class CadreDetector():
     
-    def parse_cadres(self,psd_path)->list[Cadre]:
+    def __init__(self):
+        self._shot_regex = [
+            re.compile(p, re.IGNORECASE)
+            for p in STUDIO_CONVENTIONS["shot_patterns"]
+        ]
+    
+    def parse_cadres(self, psd_path: str) -> list[Cadre]:
+        psd = PSDImage.open(psd_path)
+
+        cadres = []
+
+        # run both strategies
+        cadres += self._parse_group_camera(psd, psd_path)
+        #cadres += self._parse_flat_shot_layer(psd, psd_path)
+
+        return self._deduplicate(cadres)
+
+    
+    def _match_shot(self, name: str) -> str | None:
+        for regex in self._shot_regex:
+            m = regex.match(name)
+            if m:
+                return m.group(0)  # return matched shot string
+        return None
+    
+    def _parse_group_camera(self, psd, psd_path):
+        cadres = []
+
+        for layer in self._walk_layers(psd):
+            if not layer.is_group():
+                continue
+
+            shot_name = self._match_shot(layer.name)
+            if not shot_name:
+                continue
+
+            camera_layer = self._find_camera_layer(layer)
+
+            if not camera_layer:
+                continue
+
+            cadres.append(
+                self._build_cadre(psd_path, shot_name, camera_layer)
+            )
+
+        return cadres
+    
+    def _parse_flat_shot_layer(self, psd, psd_path):
+
+        cadres = []
+
+        for layer in self._walk_layers(psd):
+            if layer.is_group():
+                continue
+            
+            shot_name = self._match_shot(layer.name)
+            if not shot_name:
+                continue
+
+            # 👉 layer itself defines the camera frame
+            cadres.append(
+                self._build_cadre(psd_path, shot_name, layer)
+            )
+
+        return cadres
+    
+    def _walk_layers(self, layer):
+        yield layer
+        if hasattr(layer, "layers"):
+            for child in layer.layers:
+                for sub in self._walk_layers(child):
+                    yield sub    
+                    
+    def _find_camera_layer(self, group):
+        for layer in group.layers:
+            if layer.name.lower() == "camera":
+                return layer
+        return None
+    
+    def _build_cadre(self, psd_path, shot_name, layer) -> Cadre:
+        bbox = layer.bbox
+
+        frame = Rect(
+            x=bbox.x1,
+            y=bbox.y1,
+            width=bbox.width,
+            height=bbox.height
+        )
+
+        return Cadre(
+            name=f"{shot_name}_camera",
+            shot=shot_name,
+            path=psd_path,
+            frame=frame,
+            dcx=frame.width // 2,
+            dcy=frame.height // 2
+        )
+        
+    def _deduplicate(self, cadres:list[Cadre])->list[Cadre]:
+        seen = set()
+        result = []
+
+        for c in cadres:
+            key = (c.shot, c.frame.x, c.frame.y)
+
+            if key in seen:
+                continue
+
+            seen.add(key)
+            result.append(c)
+
+        return result
+            
+    def psdreader(self,psd_path)->list[Cadre]:
         # use pipeline module psdreader 
         return PSDReaderConnector().parse_cadres(psd_path)
         ...
 
-    # wip : alternative parsing cadres with PSDtools
-    
-    '''
-    
-    def _get_psd_layers_info(psd_path):
-        """
-        Retourne un dictionnaire label -> info (scene, x, y) depuis psd-tools.
-        Prend en compte les offsets des groupes parents.
-        """
-        try:
-            psd = PSDImage.open(psd_path)
-            layers_info = {}
-            scene = 0
-            
-            def process_layer(layer, parent_offset=(0, 0), parent_path=""):
-                nonlocal scene
-                
-                # Calculer le chemin complet du layer
-                if parent_path:
-                    full_name = f"{parent_path}/{layer.name}"
-                else:
-                    full_name = layer.name
-                
-                # Calculer les coordonnées absolues
-                abs_x = layer.left + parent_offset[0]
-                abs_y = layer.top + parent_offset[1]
-                
-                # Stocker les infos du layer
-                layers_info[full_name] = {
-                    "scene": scene,
-                    "x": abs_x,
-                    "y": abs_y,
-                    "width": layer.width,
-                    "height": layer.height,
-                }
-                
-                print(f"Layer détecté: {full_name} - scene={scene}, pos=({abs_x}, {abs_y}), size=({layer.width}x{layer.height})")
-                
-                scene += 1
-                
-                # Si c'est un groupe, traiter les enfants récursivement
-                if hasattr(layer, '__iter__'):
-                    for child in layer:
-                        process_layer(child, parent_offset=(abs_x, abs_y), parent_path=full_name)
-            
-            # Parcourir tous les layers de la racine
-            for layer in psd:
-                process_layer(layer)
-            
-            print(f"\nTotal layers récupérés: {len(layers_info)}")
-            return layers_info
-            
-        except Exception as e:
-            print(f"Erreur lors de la récupération des infos layers avec psd-tools: {e}")
-            import traceback
-            traceback.print_exc()
-            return {}
-            
-    '''
