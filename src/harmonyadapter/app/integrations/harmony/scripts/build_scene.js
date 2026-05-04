@@ -14,7 +14,9 @@ include(lib_folder+"/js/OpenHarmony-0.11.0/openHarmony.js")
 MessageLog.trace("----------------------------------------------------------")
 
 include(script_folder+"/engine/parse_args.js")
-include(script_folder+"/engine/scene_build.js")
+include(script_folder+"/engine/scene_build/asset_group.js")
+include(script_folder+"/engine/scene_build/asset_import_strategies.js")
+include(script_folder+"/engine/scene_build/scene_build.js")
 
 const args = parse_args()
 MessageLog.trace(JSON.stringify(args))

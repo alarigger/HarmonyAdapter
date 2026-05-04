@@ -69,7 +69,7 @@ class HarmonyAdapter():
 
 '''
 @HarmonyAdapter._register_handler("preview_shot")
-def preview_shot(self:HarmonyAdapter,request:HarmonyAdapterRequest)->HarmonyAdapterRepport:
+def preview_shot_handler(self:HarmonyAdapter,request:HarmonyAdapterRequest)->HarmonyAdapterRepport:
     '''
         position the background image in front of the shot camera and render the video  
     '''
@@ -86,7 +86,7 @@ def preview_shot(self:HarmonyAdapter,request:HarmonyAdapterRequest)->HarmonyAdap
 @HarmonyAdapter._register_handler("build_scene")
 def build_scene_handler(self:HarmonyAdapter,request:HarmonyAdapterRequest)->HarmonyAdapterRepport:
     '''
-        build scene for animation
+        build scene for animators to start working
     '''
     report = HarmonyAdapterRepport()
     factory = SceneBuildStrategyFactory()

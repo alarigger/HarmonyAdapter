@@ -15,6 +15,7 @@ class HarmonyPreviewStrategy(PreviewStrategy):
     def generate_preview(self, request: HarmonyAdapterRequest) -> str:
         self._validate_request(request)
 
+        completed_request = request # wip
 
         bg = completed_request.bg
 

@@ -1,3 +1,10 @@
+/*
+
+    require class AssetGroup AssetGroupFactory and ImportStrategiesRegister
+
+*/
+
+
 function build_scene(json_path) {
     var data = new SceneBuilDataFactory().from_json(json_path)
     // Pass parsed object to builder
@@ -108,11 +115,15 @@ function Asset(data) {
         }
     }
 }
+
+
+
 function AssetFile(data) {
     this.scene_name = null
     this.type = data.type;
     this.asset_type = null;
     this.role = data.role;
+    this.actions = data.role || [] // array of string representing registered action names 
     this.path = resolve_library_path(data.path);
     this.debug_print = function(prefix) {
         prefix = prefix || "";
@@ -135,6 +146,35 @@ function AssetFile(data) {
 
         return name;
     };
+}
+
+
+function AssetFileActionRegister(){
+    this._table = {}
+    /**
+     * 
+     * @param {string} name 
+     * @param {function} func 
+     */
+    this.register = function(name,func){
+        this._table[name] = func
+    }
+    /**
+     * 
+     * @param {AssetFile} asset_file 
+     * @param {string} action_name 
+     */
+    this.apply = function(asset_file,action_name){
+        if(!this._table[action_name]){
+            MessageLog.trace("AssetFileAction named "+action_name+" not found")
+            return 
+        }
+        if(typeof this._table[action_name] !== "function"){
+            MessageLog.trace("AssetFileAction named "+action_name+" not found")
+            return 
+        }
+        return this._table[action_name](asset_file)
+    }
 }
 
 
@@ -315,9 +355,12 @@ function CastingValidation(){
     };
 }
 
+
+
 function CastingImporter(){
 
     this._validation = new CastingValidation()
+    this._asset_group_factory = new AssetGroupFactory()
     this._file_index = 0
     this._next_x = 0
     this._next_y = 0
@@ -337,11 +380,11 @@ function CastingImporter(){
             if(!this._validation.validate_asset(casting.assets[c])){
                 continue
             }
-            var asset_group = this._import_asset(asset)
+            var asset_file_groups = this._import_asset(asset)
             if(type_table[asset.type]==undefined){
                 type_table[asset.type]= []
             }
-            type_table[asset.type].push(asset_group)
+            type_table[asset.type].push(asset_file_groups[0])
             // use later for backdrop grouping 
         }
     }   
@@ -350,58 +393,62 @@ function CastingImporter(){
     /**
      * Import all asset files 
      * @param {Asset} asset 
+     * @returns {string[]}
      */
     this._import_asset = function(asset){
+        var asset_groups = []
         for(var c = 0 ; c < asset.files.length ; c++ ){
-            var composite = this._template.get_composite(asset.type)
-            var asset_group = this._import_asset_file(asset.files[c],composite)
-
+            var asset_file_group = this._import_asset_file(asset,asset.files[c])
+            asset_file_groups.push(asset_file_group)
         }
+        return asset_groups
     }    
 
 
     /**
      * Import single asset file inside a new asset group and link it to the composite
      * The node are imported according to the matching asset_file type strategy 
+     * @param {Asset} asset
      * @param {AssetFile} asset_file 
      * @param {$.oNode} composite 
-     * @returns {$.oGroupNode}
+     * @returns {AssetGroup}
      */
-    this._import_asset_file = function(asset_file,composite){
+    this._import_asset_file = function(asset,asset_file){
 
         // show the asset file data 
         asset_file.debug_print()
 
         // create the asset group that will recieve the nodes 
-        var group = this._add_asset_group(asset_file,composite);
+        var asset_group = this._create_asset_group(asset,asset_file);
+
+        // place the group on the rigth back drop nears its friends 
+        var placed_group = this._place_asset_group(asset_group)
+
+        this._add_asset_backdrop(placed_group)
 
         // search for the import_strategy matching the asset file type 
         const type = asset_file.type;
-        var import_strategy = this._type_strategies[type];
-        if (!import_strategy) {
-            MessageLog.trace("[SceneBuilder] No import strategy for type: " + type);
-            return group;
-        }
 
         // import nodes inside the group 
-        import_strategy(asset_file.path, group);
+        var imported_nodes = import_strategy_register.apply(placed_group)
 
         // like the group output to the given composite node 
-        group.linkOutNode(composite)
+        this._link_asset_group(placed_group)
+
         this._file_index+=1
 
         // return the complete group
-        return group
+        return placed_group
         
     };
 
     /**
      * Get or Create the asset file group for a clean node import
+     * @param {Asset} asset
      * @param {AssetFile} asset_file 
-     * @param {$.oNode} composite 
-     * @returns {$.oGroupNode}
-     */
-    this._add_asset_group = function(asset_file,composite){
+     * @returns {AssetGroup}
+    */
+    this._create_asset_group = function(asset,asset_file){
         var group_name = asset_file.get_file_name()+"_"+this._file_index; 
         try {
             var existing = $.scene.getNodeByPath("Top/" + group_name);
@@ -410,20 +457,22 @@ function CastingImporter(){
             }
         } catch (e) {}
         var top = $.scene.getNodeByPath("Top");
-        var asset_group =  top.addGroup(group_name);
+        var new_group =  top.addGroup(group_name);
 
-        return this._place_asset_group(asset_group,asset_file,composite)
+        var asset_group = this._asset_group_factory.create(new_group,asset,asset_file)
 
+        return asset_group
     }
-
+    
     /**
      * place the asset group in line and in the rigth backdrop (infos given by the template )
-     * @param {$.oGroupNode} group 
-     * @param {AssetFile} asset_file 
-     * @param {$.oNode} composite 
-     * @returns {$.oGroupNode}
+     * @param {AssetGroup} asset_group 
+     * @returns {AssetGroup}
      */
-    this._place_asset_group = function(group,asset_file,composite){
+    this._place_asset_group = function(asset_group){
+        const composite = this._template.get_composite(asset_group.get_asset_type())
+        const backdrop = this._template.get_backdrop(asset_group.get_asset_type())
+        var group = asset_group.get_group()
         if(this._next_x==0 && composite){
             this._move_to_backdrop(group,"")
             this._next_y = composite.y -500
@@ -432,136 +481,43 @@ function CastingImporter(){
         group.x = group.x + this._next_x
         group.y= this._next_y
         this._next_x+=100
-        this._add_asset_backdrop(group,asset_file)
-        return group
+        return asset_group
     }
 
+
+
+
+    /**
+     * link the group to the proper composite and peg 
+     * @param {AssetGroup} asset_group 
+     * @returns {AssetGroup}
+     */
+    this._link_asset_group=function(asset_group){
+        const composite = this._template.get_composite(asset_group.get_asset_type())
+        group.linkOutNode(composite)
+        return asset_group
+    }
 
 
     /**
      * add a backdrop around the group with info about the asset file 
-     * @param {$.oGroupNode} group 
-     * @param {AssetFile} asset_file  
+     * @param {AssetGroup} asset_group 
+     * @returns {AssetGroup}
      */
-    this._add_asset_backdrop = function(group,asset_file){
+    this._add_asset_backdrop = function(asset_group){
         //wip
+        return asset_group
     }
 
     /**
      * place the asset group at the top right corner of the back drop 
-     * @param {$.oGroupNode} group 
+     * @param {AssetGroup} asset_group 
      * @param {*} backdrop 
      */
-    this._move_to_backdrop = function(group,backdrop){
+    this._move_to_backdrop = function(asset_group,backdrop){
         // wip 
     }  
-
-    // todo : separate importation from asset and make it more general
-    this._type_strategies = {
-
-        TPL: function(path, group){
-
-            var nodes = group.importTemplate(path);
-            MessageLog.trace("[TPL] imported nodes raw: " + nodes);
-
-            if (!nodes) {
-                MessageLog.trace("[TPL] ERROR Import failed: " + path);
-                return null;
-            }
-
-            // Normalize to array
-            if (!Array.isArray(nodes)) {
-                nodes = [nodes];
-            }
-
-            if (nodes.length === 0) {
-                MessageLog.trace("[TPL] ERROR Empty import result: " + path);
-                return null;
-            }
-            var firstNode = nodes[0];
-
-            MessageLog.trace("[TPL] data type : " +typeof firstNode);
-
-            // If template root is a group
-            if (node.type(firstNode.path)=="GROUP") {
-                MessageLog.trace("[TPL] linking group ...");
-                firstNode.linkOutNode(group.multiportOut)
-                group.multiportIn.linkOutNode(firstNode)
-
-            } else {
-                MessageLog.trace("[TPL] Imported non-grouped template: " + path);
-                MessageLog.trace("[TPL] keeping imported node graph as-is (no forced relink).");
-            }
-
-            return nodes;
-        },
-        PSD:function(path,group){
-            return group.importPSD(path,true,true,true,true)
-        },
-        /**
-         * XSTAGE : import d'un puppet Harmony depuis un fichier .xstage extrait.
-         *
-         * Stratégie : tenter d'abord importTemplate (OpenHarmony), qui peut
-         * accepter un .xstage valide en plus du .tpl classique.
-         * En cas d'échec, essayer scene.importLayout (API native Harmony).
-         *
-         * Note studio Miyu :
-         *   Les puppets sont livrés sous forme d'archives .rar/.zip contenant
-         *   un .xstage. Le PuppetResolver Python extrait l'archive et passe le
-         *   chemin .xstage ici via le JSON de scene build.
-         */
-        XSTAGE:function(path, group){
-            MessageLog.trace("[XSTAGE] Import du puppet depuis : " + path);
-
-            // --- Tentative 1 : importTemplate OpenHarmony ---
-            var nodes = null;
-            try {
-                nodes = group.importTemplate(path);
-            } catch(e) {
-                MessageLog.trace("[XSTAGE] importTemplate a échoué : " + e);
-                nodes = null;
-            }
-
-            if (nodes && !(Array.isArray(nodes) && nodes.length === 0)) {
-                MessageLog.trace("[XSTAGE] importTemplate réussi.");
-                if (!Array.isArray(nodes)) nodes = [nodes];
-                var first = nodes[0];
-                if (node.type(first.path) === "GROUP") {
-                    first.linkOutNode(group.multiportOut);
-                    group.multiportIn.linkOutNode(first);
-                }
-                return nodes;
-            }
-
-            // --- Tentative 2 : scene.importLayout (API native Harmony) ---
-            try {
-                MessageLog.trace("[XSTAGE] Tentative importLayout...");
-                // scene.importLayout importe la structure de nodes depuis un .xstage
-                // uniquement disponible dans certaines versions de Harmony Premium
-                scene.importLayout(path, group.path);
-                MessageLog.trace("[XSTAGE] importLayout réussi.");
-                return group;
-            } catch(e2) {
-                MessageLog.trace("[XSTAGE] importLayout a échoué : " + e2);
-            }
-
-            MessageLog.trace("[XSTAGE] ERREUR : impossible d'importer " + path);
-            MessageLog.trace("[XSTAGE] → Vérifier que le .xstage est un puppet valide.");
-            return null;
-        },
-        PNG:function(path,group){
-            return group
-        },        
-        PNG_SEQUENCE:function(path,group){
-            return group
-        },
-        PNG_AS_LAYERS:function(path,group){
-            return group
-        },        
-        VIDEO:function(path,group){
-            return group
-        }
-    }    
+ 
     this._role_strategies = {
         "rig":function(path,group){
 
