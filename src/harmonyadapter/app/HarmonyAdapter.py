@@ -84,16 +84,16 @@ def preview_shot(self:HarmonyAdapter,request:HarmonyAdapterRequest)->HarmonyAdap
     ...
     
 @HarmonyAdapter._register_handler("build_scene")
-def preview_shot(self:HarmonyAdapter,request:HarmonyAdapterRequest)->HarmonyAdapterRepport:
+def build_scene_handler(self:HarmonyAdapter,request:HarmonyAdapterRequest)->HarmonyAdapterRepport:
     '''
-        build scene for animation 
+        build scene for animation
     '''
     report = HarmonyAdapterRepport()
     factory = SceneBuildStrategyFactory()
 
     strategy = factory.get_strategy(request.get_software())
     new_scene = strategy.build_scene(request)
-    
+
     return report
 
     ...

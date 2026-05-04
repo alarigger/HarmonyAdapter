@@ -384,7 +384,7 @@ function CastingImporter(){
         }
 
         // import nodes inside the group 
-        import_strategy(path, group);
+        import_strategy(asset_file.path, group);
 
         // like the group output to the given composite node 
         group.linkOutNode(composite)
@@ -489,13 +489,65 @@ function CastingImporter(){
                 group.multiportIn.linkOutNode(firstNode)
 
             } else {
-                MessageLog.trace("[TPL] ERROR Imported non-grouped template: " + path);
+                MessageLog.trace("[TPL] Imported non-grouped template: " + path);
+                MessageLog.trace("[TPL] keeping imported node graph as-is (no forced relink).");
             }
 
             return nodes;
         },
         PSD:function(path,group){
             return group.importPSD(path,true,true,true,true)
+        },
+        /**
+         * XSTAGE : import d'un puppet Harmony depuis un fichier .xstage extrait.
+         *
+         * Stratégie : tenter d'abord importTemplate (OpenHarmony), qui peut
+         * accepter un .xstage valide en plus du .tpl classique.
+         * En cas d'échec, essayer scene.importLayout (API native Harmony).
+         *
+         * Note studio Miyu :
+         *   Les puppets sont livrés sous forme d'archives .rar/.zip contenant
+         *   un .xstage. Le PuppetResolver Python extrait l'archive et passe le
+         *   chemin .xstage ici via le JSON de scene build.
+         */
+        XSTAGE:function(path, group){
+            MessageLog.trace("[XSTAGE] Import du puppet depuis : " + path);
+
+            // --- Tentative 1 : importTemplate OpenHarmony ---
+            var nodes = null;
+            try {
+                nodes = group.importTemplate(path);
+            } catch(e) {
+                MessageLog.trace("[XSTAGE] importTemplate a échoué : " + e);
+                nodes = null;
+            }
+
+            if (nodes && !(Array.isArray(nodes) && nodes.length === 0)) {
+                MessageLog.trace("[XSTAGE] importTemplate réussi.");
+                if (!Array.isArray(nodes)) nodes = [nodes];
+                var first = nodes[0];
+                if (node.type(first.path) === "GROUP") {
+                    first.linkOutNode(group.multiportOut);
+                    group.multiportIn.linkOutNode(first);
+                }
+                return nodes;
+            }
+
+            // --- Tentative 2 : scene.importLayout (API native Harmony) ---
+            try {
+                MessageLog.trace("[XSTAGE] Tentative importLayout...");
+                // scene.importLayout importe la structure de nodes depuis un .xstage
+                // uniquement disponible dans certaines versions de Harmony Premium
+                scene.importLayout(path, group.path);
+                MessageLog.trace("[XSTAGE] importLayout réussi.");
+                return group;
+            } catch(e2) {
+                MessageLog.trace("[XSTAGE] importLayout a échoué : " + e2);
+            }
+
+            MessageLog.trace("[XSTAGE] ERREUR : impossible d'importer " + path);
+            MessageLog.trace("[XSTAGE] → Vérifier que le .xstage est un puppet valide.");
+            return null;
         },
         PNG:function(path,group){
             return group
