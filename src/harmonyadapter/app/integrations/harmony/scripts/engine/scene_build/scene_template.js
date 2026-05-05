@@ -145,6 +145,8 @@ function Template(data) {
 
         this._place_animatic()
 
+        // TODO : lock specific layers 
+
         return this._created_backdrops
     }
 
