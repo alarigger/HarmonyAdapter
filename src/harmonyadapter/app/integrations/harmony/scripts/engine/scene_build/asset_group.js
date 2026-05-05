@@ -230,10 +230,138 @@ function AssetGroup(group,asset,asset_file){
         return this
     }
 
+    /**
+     * 
+     * @param {$.oColorValue} color 
+     * @returns {AssetGroup}
+     */
     this.add_backdrop = function(color){
         var color = color || new $.oColorValue("#336600ff")
         MessageLog.trace(this.get_outside_nodes())
         var backdrop =this.group.parent.addBackdropToNodes(this.get_outside_nodes(), this.get_asset_name(), "",color)
         this.backdrop = backdrop
+        return this
+    }
+
+    
+    this.move_to = function(x, y){
+
+        var anchor = null
+        var anchorX = 0
+        var anchorY = 0
+        var useBackdrop = false
+
+        // 1. Prefer backdrop as reference
+        if (this.backdrop){
+            anchor = this.backdrop
+            anchorX = this.backdrop.x
+            anchorY = this.backdrop.y
+            useBackdrop = true
+        }
+        // 2. fallback: group
+        else if (this.group){
+            anchor = this.group
+            anchorX = node.coordX(this.group.path)
+            anchorY = node.coordY(this.group.path)
+        }
+        else {
+            MessageLog.trace("move_to: no valid anchor (backdrop or group)")
+            return this
+        }
+
+        // delta move
+        var dx = x - anchorX
+        var dy = y - anchorY
+
+        // move all outside nodes
+        var nodes = this.get_outside_nodes()
+
+        for (var i = 0; i < nodes.length; i++){
+            var _node = nodes[i]
+
+            var nx = node.coordX(_node.path)
+            var ny = node.coordY(_node.path)
+
+            node.setCoord(_node.path, nx + dx, ny + dy)
+        }
+
+        // move anchor LAST
+        if (useBackdrop){
+            this.backdrop.x = x
+            this.backdrop.y = y
+        }
+        else{
+            node.setCoord(this.group.path, x, y)
+        }
+
+        MessageLog.trace("Move to "+x+" "+y)
+
+        return this
+    }
+}
+
+
+
+
+
+function AssetGroupLine(){
+    this.start_x= 0
+    this.start_y= 0
+}
+
+
+function AssetGroupPlacer(){
+    this._line_table = {}
+    this._spacing_x = 200
+    this._spacing_y = 150
+
+    this._get_next_x = function(line_name){
+        var line = this._line_table[line_name]
+
+        var x = line.x
+        line.x += this._spacing_x
+        
+        return x
+    }
+
+    this.start_line = function(line_name, x, y){
+        this._line_table[line_name] = {
+            x: x || 0,
+            y: y || 0
+        }
+    }
+
+    this._ensure_line = function(line_name,x,y){
+        if (!this._line_table[line_name]){
+            // auto-stack lines vertically
+            this.start_line(line_name,x,y)
+            
+        }
+    }
+
+    /**
+     * 
+     * @param {AssetGroup} asset_group 
+     * @param {Template} template 
+     * @returns 
+     */
+    this.place_in_line = function(asset_group, template){
+
+        var data = template.get_line_start(asset_group.get_asset_type())
+
+        MessageLog.trace(data)
+        MessageLog.trace("line: " + data.name + " x:" + data.x + " y:" + data.y)
+
+        // ensure line exists
+        this._ensure_line(data.name, data.x, data.y)
+
+        var line = this._line_table[data.name]
+
+        var x = this._get_next_x(data.name) // FIX
+        var y = line.y
+
+        asset_group.move_to(x, y)
+
+        return asset_group
     }
 }

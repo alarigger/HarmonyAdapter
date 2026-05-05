@@ -8,6 +8,13 @@
 */
 
 
+const backdrop_asset_type_color_table = {
+    Character:new $.oColorValue("#1ca062"),
+    Prop:new $.oColorValue("#d8a73e"),
+    FX:new $.oColorValue("#d819af"),
+    BG:new $.oColorValue("#193cd8"),
+    Background:new $.oColorValue("#2619d8")
+}
 
 
 function DeploymentStrategiesRegister(){
@@ -44,15 +51,10 @@ var deployment_strategy_register = new DeploymentStrategiesRegister()
 /**
  * Import All asset expept Backgrounds
      * @param {AssetGroup} asset_group
+     * @param {CastingImporter} casting_importer
     * @returns {AssetGroup}
  */
 function _deployment_strategy_non_bg_asset(asset_group,casting_importer){
-
-    const backdrop_asset_type_color_table = {
-        Character:new $.oColorValue("#1ca062"),
-        Prop:new $.oColorValue("#d8a73e"),
-        FX:new $.oColorValue("#d819af")
-    }
 
     asset_group.add_peg()
     asset_group.add_display()
@@ -66,6 +68,27 @@ function _deployment_strategy_non_bg_asset(asset_group,casting_importer){
 deployment_strategy_register.add("Character",_deployment_strategy_non_bg_asset)
 deployment_strategy_register.add("Prop",_deployment_strategy_non_bg_asset)
 deployment_strategy_register.add("FX",_deployment_strategy_non_bg_asset)
+
+/**
+ * Import Backgrounds
+     * @param {AssetGroup} asset_group
+     * @param {CastingImporter} casting_importer
+    * @returns {AssetGroup}
+ */
+function _deployment_strategy_bg_asset(asset_group,casting_importer){
+
+
+    asset_group.add_peg()
+    asset_group.add_display()
+    var backdrop_color = backdrop_asset_type_color_table[asset_group.get_asset_type()] || $.oColorValue("#336600ff")
+    asset_group.add_backdrop(backdrop_color)
+
+    return asset_group
+
+}
+deployment_strategy_register.add("Background",_deployment_strategy_bg_asset)
+deployment_strategy_register.add("BG",_deployment_strategy_bg_asset)
+
 
 
 

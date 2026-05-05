@@ -45,62 +45,6 @@ function DefaultTemplate(data) {
 
 
 }
-function Template(data) {
-    this.name = data.name != undefined ? data.name : null;
-    this.path = data.path != undefined ? resolve_library_path(data.path) : null;;
-    this.final_composite = "Top/Composite"
-    this.backdrop_map = data.backdrop_map != undefined ? data.backdrop_map : {
-        "Character":"ANIM",
-        "Prop":"ANIM",
-        "FX":"ANIM",
-        "BG":"BG",
-        "Background":"BG",
-        "Reference":"REF"
-    }
-    this.composite_map = data.composite_map != undefined ? data.composite_map :{
-        "Character":"Top/Composite",
-        "Prop":"Top/Composite",
-        "FX":"Top/Composite",
-        "BG":"Top/Composite",
-        "Background":"Top/Composite",
-        "Reference":"Top/Composite"
-    }
-    this.get_composite = function(asset_type){
-
-        if (!asset_type) {
-            MessageLog.trace("[Template] get_composite: missing type");
-            return this.final_composite;
-        }
-
-        var path = this.composite_map[asset_type];
-
-        if (!path) {
-            MessageLog.trace("[Template] get_composite: unknown type '" + asset_type + "' → fallback used");
-            return  $.scene.getNodeByPath(this.final_composite_path);
-        }
-
-        return $.scene.getNodeByPath(path);
-    };
-    this.get_backdrop = function(asset_type){
-
-        var all_brackdrops =  Backdrop.backdrops("Top")
-        MessageLog.trace(all_brackdrops)
-        if (!asset_type) {
-            MessageLog.trace("[Template] get_backdrop: missing type");
-            return "ANIM"; // safe default
-        }
-
-        var backdrop = this.backdrop_map[asset_type];
-
-        if (!backdrop) {
-            MessageLog.trace("[Template] get_backdrop: unknown type '" + asset_type + "' → fallback ANIM");
-            return "ANIM";
-        }
-
-
-        return backdrop;
-    };
-}
 
 
 function Asset(data) {
@@ -278,13 +222,14 @@ function SceneBuilder() {
      * @param {SceneBuilData} scene_build_data 
      */
     this.build = function(scene_build_data) {
+        var template = scene_build_data.template || new Template()
         if(scene_build_data.template){
             MessageLog.trace("[SceneBuild] importing template ")
-            this._import_template(scene_build_data.template)
+            this._import_template(template)
         }
         if(scene_build_data.casting){
             MessageLog.trace("[SceneBuild] importing casting ")
-            this._import_casting(scene_build_data.casting)
+            this._import_casting(scene_build_data.casting,template)
         }
     };
     /**
@@ -292,7 +237,7 @@ function SceneBuilder() {
      * @param {Template} template 
      */
     this._import_template = function(template){
-        // wip 
+        template.deploy()
     }    
     /**
      * Import all cast members and their associated files into the node view 
@@ -369,6 +314,7 @@ function CastingImporter(){
     this._next_x = 0
     this._next_y = 0
     this._template = new Template({})
+    this.placer = new AssetGroupPlacer()
 
     var self = this
     /**
@@ -378,9 +324,12 @@ function CastingImporter(){
      */
     this.import_casting = function(casting,template){
         this._template = template || new Template({})
+
         var type_table = {}
         for(var c = 0 ; c < casting.assets.length ; c++ ){
             var asset = casting.assets[c]
+            var asset_backdrop = this._template.get_backdrop(asset.type)
+            this.placer.start_line()
             if(!this._validation.validate_asset(casting.assets[c])){
                 continue
             }
@@ -391,6 +340,8 @@ function CastingImporter(){
             type_table[asset.type].push(asset_file_groups[0])
             // use later for backdrop grouping 
         }
+
+
     }   
 
 
@@ -425,17 +376,15 @@ function CastingImporter(){
         // create the asset group that will recieve the nodes and summeraise asset and asset_file data in  one object 
         var asset_group = this._create_asset_group(asset,asset_file);
 
-        // place the group on the rigth back drop nears its friends 
-        var placed_group = this._place_asset_group(asset_group)
-
-        // search for the import_strategy matching the asset file type 
-        const type = asset_file.type;
+        // place the asset group 
+        this.placer.place_in_line(asset_group,this._template)
 
         // import nodes inside the group 
-        var imported_nodes = import_strategy_register.apply(placed_group)
+        var imported_nodes = import_strategy_register.apply(asset_group)
 
         // deploy the node 
-        var deployed_group = deployment_strategy_register.apply(placed_group,this)
+        var deployed_group = deployment_strategy_register.apply(asset_group,this)
+
 
         // like the group output to the given composite node 
         this._link_asset_group(deployed_group)
@@ -443,7 +392,7 @@ function CastingImporter(){
         this._file_index+=1
 
         // return the complete group
-        return placed_group
+        return deployed_group
         
     };
 
@@ -488,13 +437,6 @@ function CastingImporter(){
         this._next_x+=100
         return asset_group
     }
-
-    this._expand_asset_group = function(asset_group){
-
-    }
-
-
-
 
     /**
      * link the group to the proper composite and peg 
