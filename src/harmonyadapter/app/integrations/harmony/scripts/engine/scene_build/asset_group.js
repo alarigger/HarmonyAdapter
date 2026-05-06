@@ -36,6 +36,9 @@ function AssetGroup(group,asset,asset_file){
     this.asset = asset || null
     this.asset_file = asset_file || null
 
+    // background data 
+    this.cadre = {}
+
     //context methods : 
     this.get_file_type = function(){
         return this.asset_file.type
@@ -177,6 +180,17 @@ function AssetGroup(group,asset,asset_file){
         // fallback: visually lowest node
         return this.get_lowest_node()
     }
+
+    // specific to background assets : 
+    /**
+     * @return {Object}
+     */
+    this.get_cadre = function(){
+        return this._cadre
+    }
+
+
+    //-------------------ACTIONS---------------------------------------
 
         /**
      * "Head" node = priority-based

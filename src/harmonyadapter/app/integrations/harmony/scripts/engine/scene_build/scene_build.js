@@ -73,6 +73,8 @@ function AssetFile(data) {
     this.role = data.role;
     this.actions = data.role || [] // array of string representing registered action names 
     this.path = resolve_library_path(data.path);
+    this.computed = data.computed || {}
+    this.cadre = data.cadre || null 
     this.debug_print = function(prefix) {
         prefix = prefix || "";
         MessageLog.trace(prefix + "[AssetFile]");

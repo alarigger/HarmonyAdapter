@@ -83,6 +83,26 @@ function _deployment_strategy_bg_asset(asset_group,casting_importer){
     var backdrop_color = backdrop_asset_type_color_table[asset_group.get_asset_type()] || $.oColorValue("#336600ff")
     asset_group.add_backdrop(backdrop_color)
 
+    // retrieve the computed cadre data (normaly passed with the request json input)
+    var current_shot_cadre = asset_group.get_shot_cadre()
+    
+    if(current_shot_cadre){
+        
+        // the parent peg of the group 
+        var asset_peg_path = asset_group.get_node("peg").path 
+        
+        // module calculating the new position of the peg to place the bg in front of the camera 
+        var cadre_fit = new CadreFitter()
+
+        // place the peg 
+        cadre_fit.place_peg_according_to_cadre(asset_peg_path,current_shot_cadre)
+    
+        
+    }
+
+    // TODO 
+    //lock peg 
+
     return asset_group
 
 }

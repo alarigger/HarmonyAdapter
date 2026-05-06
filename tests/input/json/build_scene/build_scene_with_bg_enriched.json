@@ -98,7 +98,10 @@
                         ],
                         "path": "__LIBRARY__/backgrounds/camera_panH.psd",
                         "computed": {
-                            "cadres": []
+                            "cadre": {
+                                "frame":{"x":100,"y":152,"width":1952,"height":984},
+                                "background":{"width":3000,"height":2000}
+                            }
                         }
                     }
                 ]

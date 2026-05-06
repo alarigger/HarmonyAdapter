@@ -92,7 +92,6 @@
                     {
                         "type": "PSD",
                         "role":"background",
-                        "actions":["import_as_image","fit_cadre_to_camera"],
                         "path": "__LIBRARY__/backgrounds/camera_panH.psd"
                     }
                 ]
