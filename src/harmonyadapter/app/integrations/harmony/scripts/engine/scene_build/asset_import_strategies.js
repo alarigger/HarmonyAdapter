@@ -97,8 +97,11 @@ function _import_stragy_psd(asset_group){
     const path = asset_group.get_path()
     var group = asset_group.group
 
+    var png_path = path.split(".psd").join(".png")
+
+    return group.importImage(...)
+    //return group.importPSD(path,true,true,true,true)
     return asset_group
-    return group.importPSD(path,true,true,true,true)
 }
 import_strategy_register.add("PSD",_import_stragy_psd)
 
