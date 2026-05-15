@@ -40,6 +40,10 @@ function AssetGroup(group,asset,asset_file){
     this.get_file_type = function(){
         return this.asset_file.type
     }
+    //context methods : 
+    this.get_import_strategy = function(){
+        return this.asset_file.import_strategy
+    }
 
     /**
      * Returns the shot cadre in CadreFitter format, or null if not available.
@@ -48,17 +52,12 @@ function AssetGroup(group,asset,asset_file){
      * @returns {Object|null}
      */
     this.get_shot_cadre = function() {
-        var computed = this.asset_file && this.asset_file.computed;
-        if (!computed) return null;
-        if (computed.cadres && computed.cadres.length > 0 && computed.bg) {
-            var c = computed.cadres[0];
-            return {
-                frame:      { x: c.x, y: c.y, width: c.width, height: c.height },
-                background: { width: computed.bg.width, height: computed.bg.height }
-            };
-        }
-        return null;
+        this.asset_file.get_shot_cadre()
+    };    
+    this.get_proxy_path = function() {
+        this.asset_file.get_proxy_path()
     };
+
 
     this.get_path = function(){
         return this.asset_file.path

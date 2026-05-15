@@ -97,11 +97,11 @@ class HarmonyAdapterRequestCompleter:
         cadres = self._cadre_detector.parse_cadres(resolved_path)
         print(cadres)
         
-        proxy_image = ProxyGenerator.from_psd(resolved_path,"jpg")
+        proxy_image_path = ProxyGenerator.from_psd(resolved_path,"png","_next_to_source_")
 
         assetfile["computed"] = {
             "cadres": [asdict(cadre) for cadre in cadres],
-            "proxy_image":proxy_image
+            "proxy_image":proxy_image_path
         }
 
         return assetfile 

@@ -92,6 +92,8 @@
                     {
                         "type": "PSD",
                         "role":"background",
+                        "import_strategy":"use_proxy_image",
+                        "deployment_strategy":"place_bg_with_shot_cadre",
                         "path": "__LIBRARY__/backgrounds/camera_panH_miyu_struct.psd"
                     }
                 ]

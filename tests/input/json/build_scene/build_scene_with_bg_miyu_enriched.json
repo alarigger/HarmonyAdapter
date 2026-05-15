@@ -92,6 +92,8 @@
                     {
                         "type": "PSD",
                         "role": "background",
+                        "import_strategy": "use_proxy_image",
+                        "deployment_strategy": "place_bg_with_shot_cadre",
                         "path": "__LIBRARY__/backgrounds/camera_panH_miyu_struct.psd",
                         "computed": {
                             "cadres": [
@@ -114,7 +116,8 @@
                                     "dcx": 1452,
                                     "dcy": 462
                                 }
-                            ]
+                            ],
+                            "proxy_image": "D:\\1_TRAVAIL\\WIP\\MIYU\\dev\\repos\\HarmonyAdapter\\tests\\input\\tpl\\library\\backgrounds\\camera_panH_miyu_struct_proxy.png"
                         }
                     }
                 ]

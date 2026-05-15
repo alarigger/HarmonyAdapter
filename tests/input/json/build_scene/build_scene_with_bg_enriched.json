@@ -93,8 +93,31 @@
                         "type": "PSD",
                         "role": "background",
                         "path": "__LIBRARY__/backgrounds/camera_panH.psd",
+                        "import_strategy":"use_proxy_image",
+                        "deployment_strategy":"place_bg_with_shot_cadre",
                         "computed": {
-                            "cadres": []
+                            "cadres": [
+                                {
+                                    "name": "SH001_camera",
+                                    "shot": "SH001",
+                                    "path": "__/backgrounds/camera_panH.psd",
+                                    "frame": {
+                                        "x": 217,
+                                        "y": 175,
+                                        "width": 1029,
+                                        "height": 578
+                                    },
+                                    "background": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "width": 2904,
+                                        "height": 924
+                                    },
+                                    "dcx": 1452,
+                                    "dcy": 462
+                                }
+                            ],
+                            "proxy_image": "D:\\1_TRAVAIL\\WIP\\MIYU\\dev\\repos\\HarmonyAdapter\\tests\\input\\tpl\\library\\backgrounds\\camera_panH_proxy.png"
                         }
                     }
                 ]

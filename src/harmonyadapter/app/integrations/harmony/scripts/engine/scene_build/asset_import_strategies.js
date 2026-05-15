@@ -24,13 +24,12 @@ function ImportStrategiesRegister() {
      * @returns {$.oNode[]}
      */
     this.apply = function (asset_group) {
-        const file_type = asset_group.get_file_type()
-        if (!this._table[file_type]) {
-            MessageLog.trace("Import Strategy not found: " + file_type)
+        const import_strategy = asset_group.get_import_strategy() ||  asset_group.get_file_type()
+        if (!this._table[import_strategy]) {
+            MessageLog.trace("Import Strategy not found: " + import_strategy)
             return asset_group
         }
-
-        return this._table[file_type](asset_group)
+        return this._table[import_strategy](asset_group)
     }
 }
 var import_strategy_register = new ImportStrategiesRegister()
@@ -112,7 +111,7 @@ import_strategy_register.add("TPL", _import_strategy_tpl)
  * @param {AssetGroup} asset_group
  * @returns {AssetGroup}
  */
-function _import_stragy_psd(asset_group) {
+function _import_strategy_psd(asset_group) {
 
     const path = asset_group.get_path()
     var group = asset_group.group
@@ -120,7 +119,21 @@ function _import_stragy_psd(asset_group) {
     return asset_group
     return group.importPSD(path, true, true, true, true)
 }
-import_strategy_register.add("PSD", _import_stragy_psd)
+import_strategy_register.add("PSD", _import_strategy_psd)
+
+/**
+ * Import Image proxy representing the file (PSD -> PNG ) this image should exist and be given in computed.proxy_image
+ * @param {AssetGroup} asset_group
+ * @returns {AssetGroup}
+ */
+function _import_strategy_proxy_image(asset_group) {
+
+    const path = asset_group.get_proxy_path()
+    var group = asset_group.group
+    group.importImage(path)
+    return asset_group
+}
+import_strategy_register.add("use_proxy_image", _import_strategy_proxy_image)
 
 
 

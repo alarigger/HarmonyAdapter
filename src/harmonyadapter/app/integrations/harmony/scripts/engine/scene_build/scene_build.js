@@ -71,7 +71,8 @@ function AssetFile(data) {
     this.type = data.type;
     this.asset_type = null;
     this.role = data.role;
-    this.actions = data.role || [] // array of string representing registered action names 
+    this.import_strategy = data.import_strategy || null           // redirect to a specific strategy not bound to file type
+    this.deployment_strategy = data.deployment_strategy || null   // redirect to a specific strategy not bound to asset type
     this.path = resolve_library_path(data.path);
     this.computed = data.computed || null;
     this.debug_print = function(prefix) {
@@ -94,6 +95,37 @@ function AssetFile(data) {
         var name = fileName.split(".")[0];
 
         return name;
+    };
+    /**
+     * Returns the shot cadre in CadreFitter format, or null if not available.
+     * Reads from asset_file.computed (injected by Python SceneBuildRunner).
+     * Format: { frame: {x,y,width,height}, background: {width,height} }
+     * @returns {Object|null}
+     */
+    this.get_shot_cadre = function() {
+        var computed = this.computed || false;
+        if (!computed) return null;
+        if (computed.cadres && computed.cadres.length > 0 && computed.bg) {
+            var c = computed.cadres[0]; // bold assumption but okay for now 
+            return {
+                frame:      { x: c.x, y: c.y, width: c.width, height: c.height },
+                background: { width: computed.bg.width, height: computed.bg.height }
+            };
+        }
+        return null;
+    };    
+    /**
+     * Returns the shot cadre in CadreFitter format, or null if not available.
+     * Reads from asset_file.computed (injected by Python SceneBuildRunner).
+     * @returns {string|null}
+     */
+    this.get_proxy_path = function() {
+        var computed = this.computed || false;
+        if (!computed) return null;
+        if (computed.proxy_path && computed.proxy_path.length > 0 ) {
+            return computed.proxy_path
+        }
+        return null;
     };
 }
 
