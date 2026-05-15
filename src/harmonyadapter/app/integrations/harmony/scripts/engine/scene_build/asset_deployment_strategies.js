@@ -109,7 +109,7 @@ function _deployment_strategy_bg_asset(asset_group, casting_importer) {
         return asset_group
     }
     
-    MessageLog.trace("[BG deploy] CadreFitter : cadre=" + JSON.stringify(shot_cadre.frame));
+    MessageLog.trace("[BG deploy] CadreFitter : cadre=" + JSON.stringify(shot_cadre));
     cadre_fiter.place_peg_according_to_cadre(peg, shot_cadre);
 
 

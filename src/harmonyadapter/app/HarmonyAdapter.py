@@ -1,9 +1,9 @@
 from typing import List,Dict,Callable
 import json
-from app.HarmonyAdapterRequest import HarmonyAdapterRequest
-from app.HarmonyAdapterRequestCompleter import HarmonyAdapterRequestCompleter
-from app.strategies.preview.PreviewStrategyFactory import PreviewStrategyFactory
-from app.strategies.scenebuild.SceneBuildStrategyFactory import SceneBuildStrategyFactory
+from .HarmonyAdapterRequest import HarmonyAdapterRequest
+from .HarmonyAdapterRequestCompleter import HarmonyAdapterRequestCompleter
+from .strategies.preview.PreviewStrategyFactory import PreviewStrategyFactory
+from .strategies.scenebuild.SceneBuildStrategyFactory import SceneBuildStrategyFactory
 import copy
 import os 
 
@@ -93,13 +93,14 @@ def build_scene_handler(self:HarmonyAdapter,request:HarmonyAdapterRequest)->Harm
     '''
     report = HarmonyAdapterRepport()
     factory = SceneBuildStrategyFactory()
-    
     strategy = factory.get_strategy(request.get_software())
     
+    # enrichement layer
     completed_request = self.complete_request(request)
     print("------------COMPLETED REQUEST----------")
     print(completed_request)
 
+    # execution
     new_scene = strategy.build_scene(completed_request)
 
     return report

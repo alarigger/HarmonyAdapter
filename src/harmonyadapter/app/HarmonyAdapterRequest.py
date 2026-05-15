@@ -1,10 +1,10 @@
-from app.model.BG import BG,BGFactory
-from app.model.Cadre import Cadre,CadreFactory
-from app.model.Shot import Shot
-from app.model.Render import Render
-from app.model.Build import Build
-from app.model.Camera import Camera
-from app.model.Software import Software
+from .model.BG import BG,BGFactory
+from .model.Cadre import Cadre,CadreFactory
+from .model.Shot import Shot,ShotNameParser
+from .model.Render import Render
+from .model.Build import Build
+from .model.Camera import Camera
+from .model.Software import Software
 from typing import Optional
 from dataclasses import dataclass, field
 from typing import Optional
@@ -84,7 +84,52 @@ class HarmonyAdapterRequest:
             return Software.from_file(self.scene_path)
         if self.shot and self.shot.path:
             return Software.from_file(self.shot.path)        
-        return Software.UNKNOWN
+        return Software.UNKNOWN    
+    
+    def get_shot(self) -> Optional["Shot"]:
+        """
+        Resolve shot from existing data or by parsing available paths.
+        Priority:
+            1. self.shot.name (already resolved)
+            2. scene_path
+            3. shot.path
+        """
+
+        # 1. Already resolved
+        if self.shot and self.shot.name:
+            return self.shot
+
+        # 2. Collect candidate paths safely
+        path_candidates = [
+            self.scene_path,
+            getattr(self.shot, "path", None) if self.shot else None,
+        ]
+
+        # 3. Try parsing shot name from paths
+        for path in path_candidates:
+            if not path:
+                continue
+
+            shot_name = ShotNameParser.parse(path)
+
+            if shot_name:
+                # Build or update Shot object
+                if self.shot:
+                    return Shot(
+                        path=self.shot.path,
+                        name=shot_name,
+                        camera=self.shot.camera,
+                    )
+
+                return Shot(
+                    path=path,
+                    name=shot_name,
+                    camera=None,
+                )
+
+        return self.shot
+        
+    
     
 class HarmonyAdapterRequestFactory():
     '''
@@ -157,6 +202,8 @@ class HarmonyAdapterRequestFactory():
                     camera = Camera()
                     camera.name = str(cli_args.camera)
                     shot.camera = camera
+                    
+        
 
         # -------- Render --------
         render = None

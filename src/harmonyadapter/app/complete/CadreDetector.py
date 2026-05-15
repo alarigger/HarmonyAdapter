@@ -1,14 +1,8 @@
-from app.model.Cadre import Cadre,Rect,CadreFactory
-from app.model.PSDDocument import PSDDocument
-from app.model.BGLayer import BGLayer
-from app.integrations.psdreader.PSDReaderConnector import PSDReaderConnector
+from ..model.Cadre import Cadre,CadreFactory
+from ..model.PSDDocument import PSDDocument
 import re
-from psd_tools import PSDImage
-from psd_tools.api.layers import Group
 from typing import List
-import os
-import re
-import dataclasses
+
 
 STUDIO_CONVENTIONS= {
     "shot_patterns": [
@@ -30,16 +24,9 @@ class CadreDetector():
     
     def parse_cadres(self, psd_path: str) -> list[Cadre]:
         psd = PSDDocument(psd_path).parse()        
-        
-        print(psd)
-
         cadres = []
         cadres += self._parse_with_layers_names(psd)
         cadres += self._parse_with_group_hierarchy(psd)
-        
-        print("**********************************DETECTED CADRES**********************************")
-        print(cadres)
-
         return self._deduplicate(cadres)
     
     def _parse_with_layers_names(self,psd:PSDDocument)->list[Cadre]:
@@ -131,8 +118,4 @@ class CadreDetector():
 
         return result
             
-    def psdreader(self,psd_path)->list[Cadre]:
-        # use pipeline module psdreader 
-        return PSDReaderConnector().parse_cadres(psd_path)
-        ...
 

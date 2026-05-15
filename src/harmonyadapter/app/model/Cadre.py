@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Optional,Union
 from .PSDDocument import PSDDocument
 from .BGLayer import BGLayer
+from .Shot import ShotNormalizer
 import json
 
 @dataclass
@@ -33,6 +34,16 @@ class Cadre:
 
 
 class CadreFactory:
+    
+    _shot_normaliser = ShotNormalizer()
+    
+    
+    
+    
+    @staticmethod
+    def normalise_shot(name: str) -> str:    
+        return CadreFactory._shot_normaliser.normalize(name)
+    
     @staticmethod
     def from_json_path(json_path: str) -> list[Cadre]:
         """
@@ -51,6 +62,8 @@ class CadreFactory:
         """
         if isinstance(data, dict):
             data = [data]
+            
+        _shot_name = CadreFactory.normalise_shot(item.get("shot") or item.get("name"))
 
         cadres = []
         for item in data:
@@ -70,7 +83,7 @@ class CadreFactory:
 
             cadre = Cadre(
                 name=item.get("name"),
-                shot=item.get("shot"),
+                shot=_shot_name,
                 path=None,
                 frame=frame,
                 background=background,
@@ -120,13 +133,35 @@ class CadreFactory:
             width=psd.width,
             height=psd.height
         )
+        
+        _shot_name = CadreFactory.normalise_shot(shot_name)
 
         return Cadre(
-            name=f"{shot_name}_camera",
-            shot=shot_name,
+            name=f"{_shot_name}_camera",
+            shot=_shot_name,
             path=CadreFactory.ofuscate_path(psd.psd_path),   
             frame=frame,
             background=background,
             dcx=background.width // 2,
             dcy=background.height // 2
         )
+        
+        
+    @staticmethod
+    def set_shot_name_normalising_method(method_name:str) -> str:
+        CadreFactory.shot_normalizing_method = method_name
+        
+    @staticmethod
+    def _normalise_shot_name(shot_name:str) -> str:
+        methods = {
+            "english_standard":CadreFactory._norm
+        }
+        # 012 --> SH023
+        
+    @staticmethod
+    def _normalise_shot_name(shot_name:str) -> str:
+        methods = {
+            "english_standard":_
+        }
+        # 012 --> SH023
+        

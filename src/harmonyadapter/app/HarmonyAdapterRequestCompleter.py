@@ -1,11 +1,6 @@
-from app.model.BG import BG
-from app.model.Shot import Shot
-from app.model.Render import Render
-from app.model.Camera import Camera
-from app.model.Software import Software
-from app.HarmonyAdapterRequest import HarmonyAdapterRequest
-from app.complete.CadreDetector import CadreDetector
-from app.complete.ProxyGenerator import ProxyGenerator
+
+from .HarmonyAdapterRequest import HarmonyAdapterRequest
+from .complete.AssetEnricher import AssetEnricher
 from dataclasses import replace,asdict
 from typing import Dict,Callable
 import json
@@ -23,7 +18,6 @@ class HarmonyAdapterRequestCompleter:
         --> enable to make bringe between harmony and blender later 
     
     '''
-    _cadre_detector = CadreDetector()
 
     def complete(self, request: HarmonyAdapterRequest) -> HarmonyAdapterRequest:
         strat = self._get_completion_strategy(request)
@@ -45,7 +39,8 @@ class HarmonyAdapterRequestCompleter:
         ...
         
         
-    def _complete_build_scene(self, request: HarmonyAdapterRequest) -> HarmonyAdapterRequest:
+    def _complete_build_scene(self,request: HarmonyAdapterRequest) -> HarmonyAdapterRequest:
+
         if request.json_input_path is None:
             return request
 
@@ -54,57 +49,23 @@ class HarmonyAdapterRequestCompleter:
 
         assets = data.get("casting", {}).get("assets", [])
 
-        enriched_assets = []
-        for asset in assets:
-            enriched_assets.append(self._enrich_asset(asset))
+        enricher = AssetEnricher()
 
-        data["casting"]["assets"] = enriched_assets
+        data["casting"]["assets"] = enricher.enrich_assets(request,assets)
 
-        # Write enriched JSON
-        output_path = request.json_input_path.replace(".json", "_enriched.json")
+        output_path = request.json_input_path.replace(
+            ".json",
+            "_enriched.json"
+        )
 
         with open(output_path, "w") as f:
             json.dump(data, f, indent=4)
 
-        # RETURN NEW REQUEST (don’t mutate)
         return replace(
             request,
             json_input_path=output_path
         )
-            
-        
-    # ENRICHEMENT LEVEL 
-    def _enrich_asset(self,asset:dict)->dict:
-        enriched_asset_files = []
-        for assetfile in asset.get("files", []):
-            enriched_asset_files.append(self._enrich_assetfile(assetfile))
-        asset["files"] = enriched_asset_files
-        return asset
-           
-    def _enrich_assetfile(self,assetfile:dict)->dict:
-        if assetfile.get("type") == "PSD":
-            return self._enrich_psd_assetfile(assetfile)
-        return assetfile       
 
-    def _enrich_psd_assetfile(self, assetfile: dict) -> dict:
-
-        # resolve path first
-        resolved_path = PathResolver.resolve(assetfile.get("path"))
-        
-        print(resolved_path)
-
-        # run detection on real file
-        cadres = self._cadre_detector.parse_cadres(resolved_path)
-        print(cadres)
-        
-        proxy_image_path = ProxyGenerator.from_psd(resolved_path,"png","_next_to_source_")
-
-        assetfile["computed"] = {
-            "cadres": [asdict(cadre) for cadre in cadres],
-            "proxy_image":proxy_image_path
-        }
-
-        return assetfile 
         
     def _complete_preview(self, request: HarmonyAdapterRequest) -> HarmonyAdapterRequest:
 
@@ -134,10 +95,6 @@ class HarmonyAdapterRequestCompleter:
             shot=shot,
             render=render
         )
-        
-        print("-------------------------- completed request ---------------------------")
-        print(completed_request)
-        print("------------------------------------------------------------------------")
 
         # Return NEW immutable instance
         return completed_request
@@ -149,20 +106,3 @@ class HarmonyAdapterRequestCompleter:
     def _extract_shot_name(self, path):
         return path.split("/")[-1].split(".")[0]
     
-
-class PathResolver:
-
-    @staticmethod
-    def resolve(path: str) -> str:
-        if not path:
-            return path
-
-        library_root = os.getenv("HARMONY_LIBRARY_PATH")
-
-        if "__LIBRARY__" in path:
-            if not library_root:
-                raise RuntimeError("HARMONY_LIBRARY_PATH is not set")
-
-            path = path.replace("__LIBRARY__", library_root)
-
-        return os.path.normpath(path)

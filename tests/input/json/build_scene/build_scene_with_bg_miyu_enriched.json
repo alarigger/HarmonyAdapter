@@ -98,8 +98,8 @@
                         "computed": {
                             "cadres": [
                                 {
-                                    "name": "001_camera",
-                                    "shot": "001",
+                                    "name": "SH001_camera",
+                                    "shot": "SH001",
                                     "path": "__/backgrounds/camera_panH_miyu_struct.psd",
                                     "frame": {
                                         "x": 217,

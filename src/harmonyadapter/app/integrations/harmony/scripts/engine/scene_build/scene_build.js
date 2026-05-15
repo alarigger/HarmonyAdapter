@@ -121,6 +121,7 @@ function AssetFile(data) {
                     height: cadre.height || cadre.frame.height
             }
             return {
+                shot:cadre.shot || cadre.name || "",
                 frame:frame,
                 background: background
             };
@@ -140,35 +141,6 @@ function AssetFile(data) {
         }
         return null;
     };
-}
-
-
-function AssetFileActionRegister(){
-    this._table = {}
-    /**
-     * 
-     * @param {string} name 
-     * @param {function} func 
-     */
-    this.register = function(name,func){
-        this._table[name] = func
-    }
-    /**
-     * 
-     * @param {AssetFile} asset_file 
-     * @param {string} action_name 
-     */
-    this.apply = function(asset_file,action_name){
-        if(!this._table[action_name]){
-            MessageLog.trace("AssetFileAction named "+action_name+" not found")
-            return 
-        }
-        if(typeof this._table[action_name] !== "function"){
-            MessageLog.trace("AssetFileAction named "+action_name+" not found")
-            return 
-        }
-        return this._table[action_name](asset_file)
-    }
 }
 
 
