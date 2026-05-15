@@ -94,6 +94,8 @@ function _deployment_strategy_bg_asset(asset_group, casting_importer) {
     var cadre_fiter = new CadreFitter()
     var shot_cadre = asset_group.get_shot_cadre();
 
+    // TODO : move this to the cadre fiter responsabilty ? 
+
     // Apply cadre-matched camera positioning if cadre data is available.
     // CadreFitter lives here (deployment) rather than in the import strategy
     // so it works for all BG types (JPG, PNG, PSD) without duplication.

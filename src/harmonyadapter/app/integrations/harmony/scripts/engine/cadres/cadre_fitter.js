@@ -32,7 +32,7 @@ CadreFitter = function() {
             MessageLog.trace("[BG deploy] missing cadre object property 'frame' ");
             valid = false
         }         
-        if (!cadre_obj.frame.x || !cadre_obj.frame.y || !cadre_obj.frame.width || !cadre_obj.frame.heigth) {
+        if (!cadre_obj.frame.x || !cadre_obj.frame.y || !cadre_obj.frame.width || !cadre_obj.frame.height) {
             MessageLog.trace("[BG deploy] missing cadre frame coordonates ");
             valid = false
         }        
