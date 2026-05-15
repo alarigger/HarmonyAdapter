@@ -100,7 +100,7 @@ def build_scene_handler(self:HarmonyAdapter,request:HarmonyAdapterRequest)->Harm
     print("------------COMPLETED REQUEST----------")
     print(completed_request)
 
-    
+    return
     new_scene = strategy.build_scene(completed_request)
 
     return report

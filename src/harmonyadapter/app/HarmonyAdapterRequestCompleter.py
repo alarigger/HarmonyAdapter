@@ -5,6 +5,7 @@ from app.model.Camera import Camera
 from app.model.Software import Software
 from app.HarmonyAdapterRequest import HarmonyAdapterRequest
 from app.complete.CadreDetector import CadreDetector
+from app.complete.ProxyGenerator import ProxyGenerator
 from dataclasses import replace,asdict
 from typing import Dict,Callable
 import json
@@ -37,9 +38,13 @@ class HarmonyAdapterRequestCompleter:
         strat = _completion_strategies[request.name] or _completion_strategies["default"]
         return strat
 
+
+
     def _complete_default(self, request: HarmonyAdapterRequest) -> HarmonyAdapterRequest:
         return request
         ...
+        
+        
     def _complete_build_scene(self, request: HarmonyAdapterRequest) -> HarmonyAdapterRequest:
         if request.json_input_path is None:
             return request
@@ -91,9 +96,12 @@ class HarmonyAdapterRequestCompleter:
         # run detection on real file
         cadres = self._cadre_detector.parse_cadres(resolved_path)
         print(cadres)
+        
+        proxy_image = ProxyGenerator.from_psd(resolved_path,"jpg")
 
         assetfile["computed"] = {
-            "cadres": [asdict(cadre) for cadre in cadres]
+            "cadres": [asdict(cadre) for cadre in cadres],
+            "proxy_image":proxy_image
         }
 
         return assetfile 

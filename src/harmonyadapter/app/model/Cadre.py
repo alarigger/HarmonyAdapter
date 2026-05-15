@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional,Union
+from .PSDDocument import PSDDocument
+from .BGLayer import BGLayer
 import json
 
 @dataclass
@@ -39,6 +41,8 @@ class CadreFactory:
         with open(json_path, "r", encoding="utf-8") as f:
             json_data = json.load(f)
         return CadreFactory.from_dict(json_data)
+    
+    
 
     @staticmethod
     def from_dict(data: Union[list[dict], dict]) -> list[Cadre]:
@@ -76,3 +80,53 @@ class CadreFactory:
             cadres.append(cadre)
 
         return cadres
+    
+    @staticmethod
+    def ofuscate_path(path: str) -> str:
+        """
+        Obfuscate a path while keeping the last 3 segments visible.
+
+        Example:
+            a/b/c/d/e/f.png → .../d/e/f.png
+        """
+
+        if not path:
+            return path
+
+        parts = path.replace("\\", "/").split("/")
+
+        if len(parts) <= 3:
+            return "/".join(parts)
+
+        return "__/" + "/".join(parts[-2:])        
+        
+    @staticmethod
+    def from_psd_layer(psd: PSDDocument, shot_name:str, layer: BGLayer) -> Cadre:
+        """
+        Build a Cadre object from a BGLayer, including PSD background frame.
+        """
+
+        frame = Rect(
+            x=layer.x,
+            y=layer.y,
+            width=layer.width,
+            height=layer.heigth
+        )
+
+        # background = full PSD canvas
+        background = Rect(
+            x=0,
+            y=0,
+            width=psd.width,
+            height=psd.height
+        )
+
+        return Cadre(
+            name=f"{shot_name}_camera",
+            shot=shot_name,
+            path=CadreFactory.ofuscate_path(psd.psd_path),   
+            frame=frame,
+            background=background,
+            dcx=background.width // 2,
+            dcy=background.height // 2
+        )

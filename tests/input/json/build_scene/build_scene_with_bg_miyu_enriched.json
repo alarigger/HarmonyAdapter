@@ -92,9 +92,29 @@
                     {
                         "type": "PSD",
                         "role": "background",
-                        "path": "__LIBRARY__/backgrounds/camera_panH.psd",
+                        "path": "__LIBRARY__/backgrounds/camera_panH_miyu_struct.psd",
                         "computed": {
-                            "cadres": []
+                            "cadres": [
+                                {
+                                    "name": "001_camera",
+                                    "shot": "001",
+                                    "path": "__/backgrounds/camera_panH_miyu_struct.psd",
+                                    "frame": {
+                                        "x": 217,
+                                        "y": 175,
+                                        "width": 1029,
+                                        "height": 578
+                                    },
+                                    "background": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "width": 2904,
+                                        "height": 924
+                                    },
+                                    "dcx": 1452,
+                                    "dcy": 462
+                                }
+                            ]
                         }
                     }
                 ]

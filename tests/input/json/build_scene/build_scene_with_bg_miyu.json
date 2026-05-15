@@ -11,22 +11,22 @@
     "template": {
         "name": "template_shot",
         "path": "",
-        "backdrop_map": {
-            "Character": "ANIM",
-            "Prop": "ANIM",
-            "FX": "ANIM",
-            "BG": "BG",
-            "Background": "BG",
-            "Reference": "REF"
+        "backdrop_map" : {
+            "Character":"ANIM",
+            "Prop":"ANIM",
+            "FX":"ANIM",
+            "BG":"BG",
+            "Background":"BG",
+            "Reference":"REF"
         },
-        "final_composite": "Top/Composite",
-        "composite_map": {
-            "Character": "Top/Composite",
-            "Prop": "Top/Composite",
-            "FX": "Top/Composite",
-            "BG": "Top/Composite",
-            "Background": "Top/Composite",
-            "Reference": "Top/Composite"
+        "final_composite" : "Top/Composite",
+        "composite_map" : {
+            "Character":"Top/Composite",
+            "Prop":"Top/Composite",
+            "FX":"Top/Composite",
+            "BG":"Top/Composite",
+            "Background":"Top/Composite",
+            "Reference":"Top/Composite"
         }
     },
     "casting": {
@@ -36,10 +36,10 @@
                 "name": "CH_A",
                 "type": "Character",
                 "subType": "mainpack",
-                "files": [
+                "files":[
                     {
                         "type": "TPL",
-                        "role": "rig",
+                        "role":"rig",
                         "path": "__LIBRARY__/CH_A.tpl"
                     }
                 ]
@@ -49,10 +49,10 @@
                 "name": "CH_B",
                 "type": "Character",
                 "subType": "mainpack",
-                "files": [
+                "files":[
                     {
                         "type": "TPL",
-                        "role": "rig",
+                        "role":"rig",
                         "path": "__LIBRARY__/CH_B.tpl"
                     }
                 ]
@@ -62,10 +62,10 @@
                 "name": "CH_C",
                 "type": "Character",
                 "subType": "secondary",
-                "files": [
+                "files":[
                     {
                         "type": "TPL",
-                        "role": "rig",
+                        "role":"rig",
                         "path": "__LIBRARY__/CH_C.tpl"
                     }
                 ]
@@ -75,10 +75,10 @@
                 "name": "PR_A",
                 "type": "Prop",
                 "subType": "mainpack",
-                "files": [
+                "files":[
                     {
                         "type": "TPL",
-                        "role": "rig",
+                        "role":"rig",
                         "path": "__LIBRARY__/PR_A.tpl"
                     }
                 ]
@@ -88,14 +88,11 @@
                 "name": "BG_A",
                 "type": "Background",
                 "subType": "mainpack",
-                "files": [
+                "files":[
                     {
                         "type": "PSD",
-                        "role": "background",
-                        "path": "__LIBRARY__/backgrounds/camera_panH.psd",
-                        "computed": {
-                            "cadres": []
-                        }
+                        "role":"background",
+                        "path": "__LIBRARY__/backgrounds/camera_panH_miyu_struct.psd"
                     }
                 ]
             }
