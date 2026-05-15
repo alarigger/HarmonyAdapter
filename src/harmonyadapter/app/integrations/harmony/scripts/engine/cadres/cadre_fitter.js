@@ -15,31 +15,37 @@
 
 CadreFitter = function() {
 
-    this._validate_shot_cadre = function(shot_cadre){
+    /**
+     * 
+     *
+     * @param {object} cadre_obj
+     * @returns {bool}  coords that were applied
+     */   
+    this.validate_shot_cadre = function(cadre_obj){
         var valid = true
-        if (shot_cadre==undefined) {
+        if (cadre_obj==undefined) {
             MessageLog.trace("[BG deploy] missing cadre object");
             valid = false
             return valid
         }    
-        if (!shot_cadre.frame) {
+        if (!cadre_obj.frame) {
             MessageLog.trace("[BG deploy] missing cadre object property 'frame' ");
             valid = false
         }         
-        if (!shot_cadre.frame.x || !shot_cadre.frame.y || !shot_cadre.frame.width || !shot_cadre.frame.heigth) {
+        if (!cadre_obj.frame.x || !cadre_obj.frame.y || !cadre_obj.frame.width || !cadre_obj.frame.heigth) {
             MessageLog.trace("[BG deploy] missing cadre frame coordonates ");
             valid = false
         }        
-        if (!shot_cadre.background) {
+        if (!cadre_obj.background) {
              MessageLog.trace("[BG deploy] missing cadre object property 'background' ");
             valid = false
         }       
-        if (!shot_cadre.background.width || !shot_cadre.background.heigth ) {
+        if (!cadre_obj.background.width || !cadre_obj.background.height ) {
              MessageLog.trace("[BG deploy] missing cadre background dimentions ");
             valid = false
         }
         if(valid === false){
-            MessageLog.trace(JSON.stringify(shot_cadre));
+            MessageLog.trace(JSON.stringify(cadre_obj));
         }
         return valid
     }

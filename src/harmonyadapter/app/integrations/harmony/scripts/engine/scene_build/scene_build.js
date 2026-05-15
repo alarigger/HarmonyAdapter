@@ -114,8 +114,14 @@ function AssetFile(data) {
                 width:cadre.background.width || computed.bg.width,
                 height:cadre.background.height || computed.bg.height
             }
+            var frame = {
+                    x: cadre.x || cadre.frame.x, 
+                    y: cadre.y || cadre.frame.y, 
+                    width: cadre.width || cadre.frame.width, 
+                    height: cadre.height || cadre.frame.height
+            }
             return {
-                frame:      { x: cadre.x, y: cadre.y, width: cadre.width, height: cadre.height },
+                frame:frame,
                 background: background
             };
         }
