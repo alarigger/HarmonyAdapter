@@ -105,11 +105,15 @@ function AssetFile(data) {
     this.get_shot_cadre = function() {
         var computed = this.computed || false;
         if (!computed) return null;
-        if (computed.cadres && computed.cadres.length > 0 && computed.bg) {
-            var c = computed.cadres[0]; // bold assumption but okay for now 
+        if (computed.cadres && computed.cadres.length > 0) {
+            var cadre = computed.cadres[0]; // bold assumption but okay for now 
+            var background = {
+                width:cadre.background.width || computed.bg.width,
+                height:cadre.background.height || computed.bg.height
+            }
             return {
-                frame:      { x: c.x, y: c.y, width: c.width, height: c.height },
-                background: { width: computed.bg.width, height: computed.bg.height }
+                frame:      { x: cadre.x, y: cadre.y, width: cadre.width, height: cadre.height },
+                background: background
             };
         }
         return null;
@@ -122,8 +126,8 @@ function AssetFile(data) {
     this.get_proxy_path = function() {
         var computed = this.computed || false;
         if (!computed) return null;
-        if (computed.proxy_path && computed.proxy_path.length > 0 ) {
-            return computed.proxy_path
+        if (computed.proxy_image && computed.proxy_image.length > 0 ) {
+            return computed.proxy_image
         }
         return null;
     };

@@ -40,9 +40,14 @@ function AssetGroup(group,asset,asset_file){
     this.get_file_type = function(){
         return this.asset_file.type
     }
-    //context methods : 
+
+
+    //pipeline methods
     this.get_import_strategy = function(){
         return this.asset_file.import_strategy
+    }    
+    this.get_deployment_strategy = function(){
+        return this.asset_file.deployment_strategy
     }
 
     /**
@@ -52,10 +57,10 @@ function AssetGroup(group,asset,asset_file){
      * @returns {Object|null}
      */
     this.get_shot_cadre = function() {
-        this.asset_file.get_shot_cadre()
+        return this.asset_file.get_shot_cadre()
     };    
     this.get_proxy_path = function() {
-        this.asset_file.get_proxy_path()
+        return this.asset_file.get_proxy_path()
     };
 
 

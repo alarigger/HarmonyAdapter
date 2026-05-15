@@ -36,14 +36,19 @@ function DeploymentStrategiesRegister() {
      * @returns {$.oNode[]}
      */
     this.apply = function (asset_group, casting_importer) {
-        const asset_type = asset_group.get_asset_type()
+        const asset_type = asset_group.get_asset_type() 
+        var strategy_name = asset_group.get_deployment_strategy() || asset_type
         casting_importer = casting_importer || new CastingImporter()
-        if (!this._table[asset_type]) {
-            MessageLog.trace(" Deployment Strategy not found: " + asset_type)
+        if (!this._table[strategy_name] && asset_type != strategy_name) {
+            // fall back to asset type
+            strategy_name =  asset_type
+        }        
+        if (!this._table[strategy_name]) {
+            MessageLog.trace(" Deployment Strategy not found: " + strategy_name)
             return asset_group
         }
 
-        return this._table[asset_type](asset_group, casting_importer)
+        return this._table[strategy_name](asset_group, casting_importer)
     }
 }
 var deployment_strategy_register = new DeploymentStrategiesRegister()
@@ -105,6 +110,7 @@ function _deployment_strategy_bg_asset(asset_group, casting_importer) {
     return asset_group
 
 }
+
 deployment_strategy_register.add("Background", _deployment_strategy_bg_asset)
 deployment_strategy_register.add("BG", _deployment_strategy_bg_asset)
 // BG preview (JPG) : même logique que BG

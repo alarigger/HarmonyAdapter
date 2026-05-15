@@ -24,12 +24,12 @@ function ImportStrategiesRegister() {
      * @returns {$.oNode[]}
      */
     this.apply = function (asset_group) {
-        const import_strategy = asset_group.get_import_strategy() ||  asset_group.get_file_type()
-        if (!this._table[import_strategy]) {
-            MessageLog.trace("Import Strategy not found: " + import_strategy)
+        const strategy_name = asset_group.get_import_strategy() ||  asset_group.get_file_type()
+        if (!this._table[strategy_name]) {
+            MessageLog.trace("Import Strategy not found: " + strategy_name)
             return asset_group
         }
-        return this._table[import_strategy](asset_group)
+        return this._table[strategy_name](asset_group)
     }
 }
 var import_strategy_register = new ImportStrategiesRegister()
@@ -130,7 +130,14 @@ function _import_strategy_proxy_image(asset_group) {
 
     const path = asset_group.get_proxy_path()
     var group = asset_group.group
-    group.importImage(path)
+    if(!path){
+        MessageLog.trace("[use_proxy_image] ERROR! proxy image not found  "+path)
+        return asset_group
+    }
+    MessageLog.trace("[use_proxy_image] Importing proxy image "+path)
+    var image_node = group.importImage(path)
+    image_node.linkOutNode(group.multiportOut);
+    group.multiportIn.linkOutNode(image_node);
     return asset_group
 }
 import_strategy_register.add("use_proxy_image", _import_strategy_proxy_image)
