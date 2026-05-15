@@ -92,18 +92,7 @@
                     {
                         "type": "PSD",
                         "role": "background",
-                        "actions": [
-                            "import_as_image",
-                            "fit_cadre_to_camera"
-                        ],
-                        "path": "__LIBRARY__/backgrounds/camera_panH.psd",
-                        "computed": {
-                            "cadre": {
-                                "frame":{"x":100,"y":152,"width":1952,"height":984},
-                                "background":{"width":3000,"height":2000}
-                            },
-                            "png":"my/path/BG.png"
-                        }
+                        "path": "__LIBRARY__/backgrounds/camera_panH.psd"
                     }
                 ]
             }

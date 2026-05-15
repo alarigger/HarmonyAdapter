@@ -28,15 +28,15 @@ function Template(data) {
     this.get_composite = function(asset_type){
 
         if (!asset_type) {
-            MessageLog.trace("[Template] get_composite: missing type");
-            return this.final_composite;
+            MessageLog.trace("[Template] get_composite: missing type, using fallback");
+            return $.scene.getNodeByPath(this.final_composite);
         }
 
         var path = this.composite_map[asset_type];
 
         if (!path) {
             MessageLog.trace("[Template] get_composite: unknown type '" + asset_type + "' → fallback used");
-            return  $.scene.getNodeByPath(this.final_composite_path);
+            return $.scene.getNodeByPath(this.final_composite);
         }
 
         return $.scene.getNodeByPath(path);
@@ -145,15 +145,13 @@ function Template(data) {
 
         this._place_animatic()
 
-        // TODO : lock specific layers 
-
         return this._created_backdrops
     }
 
     this._place_animatic = function(){
         const animatic_peg_node = "Top/Animatic-P" // TODO fetch from config ? 
         if(node.type(animatic_peg_node)=="PEG" || node.type(animatic_peg_node)=="READ"){
-            frame = frame || 1
+            var frame = 1
 
             // Position
             node.setTextAttr(animatic_peg_node, "POSITION.X", frame, 10.7292)

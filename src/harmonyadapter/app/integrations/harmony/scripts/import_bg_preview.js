@@ -2,66 +2,89 @@ MessageLog.trace("----------------------------------------------------------")
 MessageLog.trace("           SCRIPT : IMPORT_BG_PREVIEW.JS ")
 MessageLog.trace("----------------------------------------------------------")
 
-const script_folder = System.getenv("HARMONY_WRAPPER_SCRIPT_FOLDER")
-const lib_folder    = System.getenv("APP_LIB_FOLDER")
+// Ce script tourne en mode BATCH (lancé via launcher.bat avec -batch -compile).
+// En batch mode :
+//   - node.add("READ") crée un vrai module READ (pas un PLACEHOLDER)
+//   - Drawing.create(id, "1", false, false) fonctionne (clearPixmap=false obligatoire)
+//   - QFile disponible pour la copie du JPG
+//   - column.setEntry() cause ACCESS_VIOLATION → NE PAS UTILISER
+//   - System.exit() non nécessaire (Harmony quitte automatiquement en fin de script)
+//
+// Gestion des exposures :
+//   L'élément est créé avec un seul dessin "1". Harmony l'expose automatiquement
+//   sur toutes les frames à l'ouverture de la scène (comportement par défaut pour
+//   un élément JPEG à dessin unique). Pas d'appel column.setEntry() requis.
+//
+// Args attendus (via HARMONY_WRAPPER_ARGS JSON) :
+//   jpg_path   : chemin absolu vers le JPG source
+//   layer_name : nom du node READ à créer (défaut : "BG_preview")
+//   offset_x   : décalage X du READ (calculé côté Python, défaut : 0)
+//   offset_y   : décalage Y du READ
+//   scale_x    : échelle X du READ (défaut : 1)
+//   scale_y    : échelle Y du READ
 
-// API Harmony brute uniquement — pas d'OpenHarmony.
-// Raisons :
-//   - root.importImage() crash en batch mode (clearPixmap=true init GPU)
-//   - column.uniqueName() n'existe pas en Harmony 25
-// On utilise :
-//   - element.add / column.add / node.add / Drawing.create (raw Harmony)
-//   - column.setElementIdOfDrawing (raw Harmony, confirmé dans oDrawingColumn.js)
-//   - Dir (raw Harmony) pour la copie de fichier
+const script_folder = System.getenv("HARMONY_WRAPPER_SCRIPT_FOLDER")
 
 include(script_folder + "/engine/parse_args.js")
 
 const args = parse_args()
 MessageLog.trace(JSON.stringify(args))
 
-_import_bg_preview(args.jpg_path, args.layer_name || "BG_preview")
-
-scene.saveAll()
+try {
+    _import_bg_preview(
+        args.jpg_path,
+        args.layer_name || "BG_preview",
+        args.offset_x !== undefined ? parseFloat(args.offset_x) : 0.0,
+        args.offset_y !== undefined ? parseFloat(args.offset_y) : 0.0,
+        args.scale_x !== undefined ? parseFloat(args.scale_x) : 1.0,
+        args.scale_y !== undefined ? parseFloat(args.scale_y) : 1.0
+    )
+    scene.saveAll()
+} catch (e) {
+    MessageLog.trace("[BGPreview] FATAL ERROR: " + e)
+    // Ne pas appeler scene.saveAll() en cas d'erreur (état potentiellement corrompu)
+}
 
 
 // ---------------------------------------------------------------------------
 // Core function
-// Drawing.create(id, name, clearPixmap, reposition) :
-//   clearPixmap=true  → crash en batch mode (init GPU/display requise)
-//   clearPixmap=false → stable en batch mode
 //
-// Ordre d'opérations intentionnel :
-//   1. Cleanup (supprimer node + tous les READ liés à la colonne, pour idempotence)
-//   2. Créer le node READ EN PREMIER — évite le conflit de nom avec l'élément
+// Lancé en mode batch : node.add("READ") crée un vrai READ module,
+// Drawing.create + QFile disponibles pour la copie du JPG.
+//
+// Ordre d'opérations :
+//   1. Cleanup idempotent (supprimer node/column/element précédents)
+//   2. Créer le node READ
 //   3. Créer élément + colonne + lier
-//   4. Copier le JPG + Drawing.create
-//   5. Lier au Composite
+//   4. Créer l'entrée Drawing et copier le JPG via Drawing.filename() + QFile
+//   5. Appliquer le transform (offset/scale) via node.setTextAttr()
+//   6. Lier au Composite
+//   (Pas d'exposures via column.setEntry() — ACCESS_VIOLATION en batch mode)
 // ---------------------------------------------------------------------------
 
-function _import_bg_preview(jpg_path, layer_name) {
+function _import_bg_preview(jpg_path, layer_name, offset_x, offset_y, scale_x, scale_y) {
 
     MessageLog.trace("[BGPreview] jpg_path   = " + jpg_path)
     MessageLog.trace("[BGPreview] layer_name = " + layer_name)
+    MessageLog.trace("[BGPreview] offset     = (" + offset_x + ", " + offset_y + ")")
+    MessageLog.trace("[BGPreview] scale      = (" + scale_x + ", " + scale_y + ")")
 
     // Normaliser les backslashes Windows → forward slashes
     jpg_path = jpg_path.split("\\").join("/")
 
     // --- Cleanup idempotent ---
-    // 1. Supprimer le node direct s'il existe déjà
     var node_path = "Top/" + layer_name
     if (node.type(node_path) !== "") {
         node.deleteNode(node_path, true, true)
         MessageLog.trace("[BGPreview] Deleted node: " + node_path)
     }
-    // 2. Supprimer tous les READ nodes de Top liés à notre colonne
-    //    (peut exister sous un autre nom si exécution précédente avortée)
     if (column.type(layer_name) !== "") {
         var subnodes = node.subNodes("Top")
         for (var i = 0; i < subnodes.length; i++) {
             var n = subnodes[i]
             if (node.type(n) === "READ") {
-                var linked = node.getTextAttr(n, 1, "DRAWING.ELEMENT")
-                if (linked === layer_name) {
+                var linked_col = node.linkedColumn(n, "DRAWING.ELEMENT")
+                if (linked_col === layer_name) {
                     node.deleteNode(n, true, true)
                     MessageLog.trace("[BGPreview] Cleaned orphan READ node: " + n)
                 }
@@ -69,10 +92,8 @@ function _import_bg_preview(jpg_path, layer_name) {
         }
     }
 
-    // --- Créer le node READ EN PREMIER ---
-    // Créer le node avant l'élément évite le conflit de nom dans le namespace Harmony
+    // --- Créer le node READ EN PREMIER (vrai READ sans -batch) ---
     var new_node = node.add("Top", "READ", layer_name, 0, 0, 0)
-    // Correction du nom si Harmony a utilisé le type comme fallback
     if (node.getName(new_node) !== layer_name) {
         node.rename(new_node, layer_name)
         new_node = "Top/" + layer_name
@@ -84,9 +105,6 @@ function _import_bg_preview(jpg_path, layer_name) {
     if (elem_id < 0) throw "[BGPreview] element.add() failed for: " + layer_name
     MessageLog.trace("[BGPreview] elem_id: " + elem_id)
 
-    // Note: column.add() peut retourner true (booléen) au lieu du nom de colonne
-    // selon la version/contexte de Harmony. On ignore la valeur de retour et on
-    // utilise toujours layer_name comme identifiant de colonne.
     var col_name = layer_name
     if (column.type(layer_name) !== "") {
         MessageLog.trace("[BGPreview] Reusing existing column: " + col_name)
@@ -94,26 +112,58 @@ function _import_bg_preview(jpg_path, layer_name) {
         column.add(layer_name, "DRAWING")
         MessageLog.trace("[BGPreview] Created column: " + col_name)
     }
-
-    // Lier la colonne au nouvel élément
     column.setElementIdOfDrawing(col_name, elem_id)
     MessageLog.trace("[BGPreview] column linked to element " + elem_id)
 
-    // --- Créer l'entrée de dessin (clearPixmap=false : stable en batch mode) ---
-    // Note: column.setEntry() crash avec ACCESS_VIOLATION en batch mode sur Harmony 25.
-    // Note: element.physicalName() retourne elementName (ex: "BG_preview") et NON
-    //       elementFolder (ex: "BG_preview.22") — la copie du fichier est donc
-    //       faite côté Python après sauvegarde, en lisant l'attribut elementFolder
-    //       depuis le XML du xstage.
+    // --- Créer l'entrée de dessin et copier le JPG ---
+    // Drawing.create(id, name, clearPixmap=false, reposition=false) :
+    //   clearPixmap=false → stable (pas d'init GPU requise)
     Drawing.create(elem_id, "1", false, false)
-    MessageLog.trace("[BGPreview] Drawing entry created")
-    // Log exact file path Harmony expects for this drawing
-    var expected_file = Drawing.filename(elem_id, "1")
-    MessageLog.trace("[BGPreview] Drawing.filename = " + expected_file)
+    var dst_path = Drawing.filename(elem_id, "1")
+    MessageLog.trace("[BGPreview] Drawing.filename = " + dst_path)
+
+    // Normaliser le chemin de destination (Drawing.filename peut retourner backslashes)
+    dst_path = dst_path.split("\\").join("/")
+
+    // Créer le dossier si nécessaire
+    var dst_dir_str = dst_path.substring(0, dst_path.lastIndexOf("/"))
+    var dst_dir = new Dir
+    dst_dir.path = dst_dir_str
+    if (!dst_dir.exists) {
+        dst_dir.mkdirs()
+        MessageLog.trace("[BGPreview] Created element folder: " + dst_dir_str)
+    }
+
+    // Copier le JPG (supprimer l'existant pour permettre l'écrasement)
+    var dst_file = new QFile(dst_path)
+    if (dst_file.exists()) dst_file.remove()
+    var src_file = new QFile(jpg_path)
+    if (!src_file.copy(dst_path)) {
+        throw "[BGPreview] QFile.copy failed: " + jpg_path + " → " + dst_path
+    }
+    MessageLog.trace("[BGPreview] JPG copied to: " + dst_path)
 
     // --- Lier le node READ à la colonne ---
     node.linkAttr(new_node, "DRAWING.ELEMENT", col_name)
     MessageLog.trace("[BGPreview] Linked READ node to column")
+
+    // Pas d'exposition explicite via column.setEntry() :
+    // column.setEntry() cause ACCESS_VIOLATION en batch mode.
+    // L'élément contient un seul dessin "1" — Harmony l'expose automatiquement.
+
+    // --- Appliquer le transform (offset/scale) sur le node READ ---
+    // Les attributs OFFSET.X/Y et SCALE.X/Y sont les attrs intégrés du READ module.
+    // node.setTextAttr(path, frame, attrName, value) — frame=1 donne une valeur statique.
+    if (offset_x !== 0.0 || offset_y !== 0.0) {
+        node.setTextAttr(new_node, "OFFSET.X", 1, offset_x)
+        node.setTextAttr(new_node, "OFFSET.Y", 1, offset_y)
+        MessageLog.trace("[BGPreview] Applied offset: (" + offset_x + ", " + offset_y + ")")
+    }
+    if (scale_x !== 1.0 || scale_y !== 1.0) {
+        node.setTextAttr(new_node, "SCALE.X", 1, scale_x)
+        node.setTextAttr(new_node, "SCALE.Y", 1, scale_y)
+        MessageLog.trace("[BGPreview] Applied scale: (" + scale_x + ", " + scale_y + ")")
+    }
 
     // --- Lier au Composite principal ---
     var comp = "Top/Composite"
@@ -123,18 +173,6 @@ function _import_bg_preview(jpg_path, layer_name) {
     } else {
         MessageLog.trace("[BGPreview] Warning: Top/Composite not found")
     }
-
-    // TODO: Cohérence caméra
-    // Le BG preview est actuellement importé flat (aucune transformation).
-    // Si la scène a un mouvement de caméra, le BG ne le suivra pas.
-    // Pour corriger : envelopper new_node dans un Peg (comme putNodeInGroupWithPeg
-    // dans bg_cadre.js) et appliquer les coordonnées issues de CameraManager.
-    // Blocker actuel : on n'a pas de "cadre" (rectangle de composition) pour ce JPG,
-    // contrairement aux BG PrevizBG qui ont un cadre défini dans le PSD.
-    // Options à évaluer avec l'équipe :
-    //   A) Utiliser la taille native du JPG comme cadre (bg.width / bg.height)
-    //   B) Laisser flat et accepter que le BG preview ne suive pas la caméra
-    //   C) Passer un cadre optionnel en argument (à alimenter par MiyuBGPreviewResolver)
 
     MessageLog.trace("[BGPreview] Done: '" + layer_name + "' imported from " + jpg_path)
 }

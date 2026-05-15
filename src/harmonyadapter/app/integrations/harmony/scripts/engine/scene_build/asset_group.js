@@ -36,13 +36,30 @@ function AssetGroup(group,asset,asset_file){
     this.asset = asset || null
     this.asset_file = asset_file || null
 
-    // background data 
-    this.cadre = {}
-
     //context methods : 
     this.get_file_type = function(){
         return this.asset_file.type
-    }        
+    }
+
+    /**
+     * Returns the shot cadre in CadreFitter format, or null if not available.
+     * Reads from asset_file.computed (injected by Python SceneBuildRunner).
+     * Format: { frame: {x,y,width,height}, background: {width,height} }
+     * @returns {Object|null}
+     */
+    this.get_shot_cadre = function() {
+        var computed = this.asset_file && this.asset_file.computed;
+        if (!computed) return null;
+        if (computed.cadres && computed.cadres.length > 0 && computed.bg) {
+            var c = computed.cadres[0];
+            return {
+                frame:      { x: c.x, y: c.y, width: c.width, height: c.height },
+                background: { width: computed.bg.width, height: computed.bg.height }
+            };
+        }
+        return null;
+    };
+
     this.get_path = function(){
         return this.asset_file.path
     }    
@@ -181,17 +198,6 @@ function AssetGroup(group,asset,asset_file){
         return this.get_lowest_node()
     }
 
-    // specific to background assets : 
-    /**
-     * @return {Object}
-     */
-    this.get_cadre = function(){
-        return this._cadre
-    }
-
-
-    //-------------------ACTIONS---------------------------------------
-
         /**
      * "Head" node = priority-based
      * @returns {$.oNode} 
@@ -220,6 +226,11 @@ function AssetGroup(group,asset,asset_file){
     }
 
     this.add_peg = function(_name){
+        // If a peg role is already registered (e.g. imported TPL already has one), skip creation
+        if (this.node_table["peg"]) {
+            MessageLog.trace("[AssetGroup] add_peg: using existing peg " + this.node_table["peg"].path);
+            return this;
+        }
         var peg = this.group.parent.addNode("PEG", this.group.name+'-P');
         peg.linkOutNode(this.group);
         peg.centerAbove(this.group);
@@ -228,9 +239,20 @@ function AssetGroup(group,asset,asset_file){
         return this
     }   
     this.add_display = function(_name){
+        // Use the foot node as source
+        var foot = this.get_foot_node() || this.group;
         var display = this.group.parent.addNode("DISPLAY", this.group.name+'-D');
-        this.group.linkOutNode(display);
-        display.centerBelow(this.group);
+        // Scan output ports to find the image output port (PEG transform ports will be rejected by Harmony)
+        var numOut = foot.outPorts;
+        var ok = false;
+        for (var p = 0; p < numOut && !ok; p++) {
+            ok = node.link(foot.path, p, display.path, 0, false, false);
+            if (ok) MessageLog.trace("[AssetGroup] add_display: linked outPort " + p + " to display");
+        }
+        if (!ok) {
+            MessageLog.trace("[AssetGroup] add_display: link failed from " + foot.path + " (outPorts=" + numOut + ")");
+        }
+        display.centerBelow(foot);
         this.register_node(display,"display")
         return this
 
