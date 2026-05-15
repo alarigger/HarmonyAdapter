@@ -51,7 +51,7 @@ class HarmonyAdapterRequestCompleter:
 
         enriched_assets = []
         for asset in assets:
-            enriched_assets.append(self._enrich_asset(request,asset))
+            enriched_assets.append(self._enrich_asset(asset))
 
         data["casting"]["assets"] = enriched_assets
 
@@ -69,61 +69,34 @@ class HarmonyAdapterRequestCompleter:
             
         
     # ENRICHEMENT LEVEL 
-    def _enrich_asset(self,request:HarmonyAdapterRequest,asset:dict)->dict:
+    def _enrich_asset(self,asset:dict)->dict:
         enriched_asset_files = []
         for assetfile in asset.get("files", []):
-            enriched_asset_files.append(self._enrich_assetfile(request,assetfile))
+            enriched_asset_files.append(self._enrich_assetfile(assetfile))
         asset["files"] = enriched_asset_files
         return asset
            
-    def _enrich_assetfile(self,request:HarmonyAdapterRequest,assetfile:dict)->dict:
+    def _enrich_assetfile(self,assetfile:dict)->dict:
         if assetfile.get("type") == "PSD":
-            return self._enrich_psd_assetfile(request,assetfile)
+            return self._enrich_psd_assetfile(assetfile)
         return assetfile       
 
-    def _enrich_psd_assetfile(self, request:HarmonyAdapterRequest,assetfile: dict) -> dict:
+    def _enrich_psd_assetfile(self, assetfile: dict) -> dict:
 
         # resolve path first
         resolved_path = PathResolver.resolve(assetfile.get("path"))
-    
+        
         print(resolved_path)
 
         # run detection on real file
         cadres = self._cadre_detector.parse_cadres(resolved_path)
         print(cadres)
-        
-        # find the cadre corresponding to the request shot 
-        shot_name = self._get_shot(request)
-        shot_cadre = None
-        for cadre in cadres:
-            if cadre.name == shot_name:
-                shot_cadre = cadre
-                break
 
-        if shot_cadre:
-            assetfile["computed"] = {
-                "cadre": shot_cadre
-            }
+        assetfile["computed"] = {
+            "cadres": [asdict(cadre) for cadre in cadres]
+        }
 
         return assetfile 
-    
-    def _get_shot(self,request:HarmonyAdapterRequest)->str:
-        # todo : search inside the json as well 
-        if request.shot:   
-            return request.shot.name             
-        context = self._get_context(request)
-        return context.get("shot")
-            
-            
-    def _get_context(self,request:HarmonyAdapterRequest)->dict:
-        if request.json_input_path is None:
-            return {}
-
-        with open(request.json_input_path, "r") as f:
-            data = json.load(f)
-            
-        context = data.get("context", {})
-        return context
         
     def _complete_preview(self, request: HarmonyAdapterRequest) -> HarmonyAdapterRequest:
 

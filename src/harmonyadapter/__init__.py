@@ -9,6 +9,8 @@
 # NOTE(cléa, 2026-04) — PROCHAINE ÉTAPE : mise à jour des décors en PSD
 # Alarigger ( Alex C) a conservé dans ce repo la logique PrevizBG (BG.py, Cadre.py,
 # PSDReaderConnector.py, bg_cadre.js) pour une intégration future.
+# Le repo source sur mon poste est : C:\Users\miyu.user162\Documents\002_DEV\PrevizBGAlex
+# (branche pervizbg_connector du repo MISTstudio/PSD_Reader).
 # Le flux prévu :
 #   1. Lire un BG en PSD via PSDReaderConnector → extraire les Cadres par shot
 #   2. Positionner le BG dans Harmony selon la géométrie caméra (bg_cadre.js)
