@@ -10,7 +10,39 @@
  *       background: { width: 1926, height: 1086 }
  *   });
  */
+
+
+
 CadreFitter = function() {
+
+    this._validate_shot_cadre = function(shot_cadre){
+        var valid = true
+        if (shot_cadre==undefined) {
+            MessageLog.trace("[BG deploy] missing cadre object");
+            valid = false
+            return valid
+        }    
+        if (!shot_cadre.frame) {
+            MessageLog.trace("[BG deploy] missing cadre object property 'frame' ");
+            valid = false
+        }         
+        if (!shot_cadre.frame.x || !shot_cadre.frame.y || !shot_cadre.frame.width || !shot_cadre.frame.heigth) {
+            MessageLog.trace("[BG deploy] missing cadre frame coordonates ");
+            valid = false
+        }        
+        if (!shot_cadre.background) {
+             MessageLog.trace("[BG deploy] missing cadre object property 'background' ");
+            valid = false
+        }       
+        if (!shot_cadre.background.width || !shot_cadre.background.heigth ) {
+             MessageLog.trace("[BG deploy] missing cadre background dimentions ");
+            valid = false
+        }
+        if(valid === false){
+            MessageLog.trace(JSON.stringify(shot_cadre));
+        }
+        return valid
+    }
 
     /**
      * Calculate cadre-matched coords and apply them to an existing Peg oNode.
@@ -20,6 +52,10 @@ CadreFitter = function() {
      * @returns {{x,y,z,sx,sy}}  coords that were applied
      */
     this.place_peg_according_to_cadre = function(peg_node, cadre_obj) {
+
+        if(this.validate_shot_cadre(cadre_obj)==false){
+            return {}
+        }
 
         var camera_arg = new CameraManager().get_camera_coords();
 

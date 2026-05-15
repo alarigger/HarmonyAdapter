@@ -86,26 +86,33 @@ deployment_strategy_register.add("Animatic", _deployment_strategy_non_bg_asset)
  */
 function _deployment_strategy_bg_asset(asset_group, casting_importer) {
 
+
+
+
     asset_group.add_peg()
     asset_group.add_display()
     var backdrop_color = backdrop_asset_type_color_table[asset_group.get_asset_type()] || $.oColorValue("#336600ff")
     asset_group.add_backdrop(backdrop_color)
 
+    var cadre_fiter = new CadreFitter()
+
     // Apply cadre-matched camera positioning if cadre data is available.
     // CadreFitter lives here (deployment) rather than in the import strategy
     // so it works for all BG types (JPG, PNG, PSD) without duplication.
     var shot_cadre = asset_group.get_shot_cadre();
-    if (shot_cadre) {
-        var peg = asset_group.get_node("peg");
-        if (peg) {
-            MessageLog.trace("[BG deploy] CadreFitter : cadre=" + JSON.stringify(shot_cadre.frame));
-            new CadreFitter().place_peg_according_to_cadre(peg, shot_cadre);
-        } else {
-            MessageLog.trace("[BG deploy] CadreFitter : pas de peg trouvé, skip.");
-        }
-    } else {
-        MessageLog.trace("[BG deploy] Pas de cadre computed, positionnement non appliqué.");
+    if (cadre_fiter.validate_shot_cadre(shot_cadre)==false) {
+        MessageLog.trace("[BG deploy] L'objet cadre n'est pas valid, positionnement non appliqué.");
+        return asset_group
+    }    
+    var peg = asset_group.get_node("peg");
+    if (!peg) {
+        MessageLog.trace("[BG deploy] CadreFitter : pas de peg trouvé, skip.");
+        return asset_group
     }
+    
+    MessageLog.trace("[BG deploy] CadreFitter : cadre=" + JSON.stringify(shot_cadre.frame));
+    cadre_fiter.place_peg_according_to_cadre(peg, shot_cadre);
+
 
     return asset_group
 

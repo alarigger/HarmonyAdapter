@@ -104,7 +104,10 @@ function AssetFile(data) {
      */
     this.get_shot_cadre = function() {
         var computed = this.computed || false;
-        if (!computed) return null;
+        if (!computed) {
+            MessageLog.trace("[get_shot_cadre] ERROR no computed data found");
+            return null
+        };
         if (computed.cadres && computed.cadres.length > 0) {
             var cadre = computed.cadres[0]; // bold assumption but okay for now 
             var background = {
