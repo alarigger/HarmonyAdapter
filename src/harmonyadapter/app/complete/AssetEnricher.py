@@ -3,7 +3,7 @@ from typing import Callable
 
 from .CadreDetector import CadreDetector
 from .ProxyGenerator import ProxyGenerator
-from .PathResolver import PathResolver
+from ..PathResolver import PathResolver
 from ..HarmonyAdapterRequest import HarmonyAdapterRequest
 
 

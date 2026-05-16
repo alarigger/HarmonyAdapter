@@ -2,6 +2,7 @@ from typing import List,Dict,Callable
 import json
 from .HarmonyAdapterRequest import HarmonyAdapterRequest
 from .HarmonyAdapterRequestCompleter import HarmonyAdapterRequestCompleter
+from .HarmonyAdapterRequestValidator import HarmonyAdapterRequestValidator
 from .strategies.preview.PreviewStrategyFactory import PreviewStrategyFactory
 from .strategies.scenebuild.SceneBuildStrategyFactory import SceneBuildStrategyFactory
 import copy
@@ -35,7 +36,10 @@ class HarmonyAdapter():
         
     def complete_request(self,request:HarmonyAdapterRequest)->HarmonyAdapterRequest:
         completed_request = HarmonyAdapterRequestCompleter().complete(request)
-        return completed_request
+        return completed_request    
+    
+    def validate_request(self,request:HarmonyAdapterRequest)->bool:
+        return HarmonyAdapterRequestValidator().validate(request)
 
     def treat(self,request:HarmonyAdapterRequest)->HarmonyAdapterRepport:
         '''
@@ -95,14 +99,24 @@ def build_scene_handler(self:HarmonyAdapter,request:HarmonyAdapterRequest)->Harm
     factory = SceneBuildStrategyFactory()
     strategy = factory.get_strategy(request.get_software())
     
+    # validation layer
+    errors = self.validate_request(request)
+    if len(errors) >0:
+        print(errors)
+        return report
+    
+    print("--REQUEST VALIDATED--")
+    
     # enrichement layer
     completed_request = self.complete_request(request)
-    print("------------COMPLETED REQUEST----------")
-    print(completed_request)
 
-    # execution
+    print("--REQUEST COMPLETED--")
+    
+    # execution layer
     new_scene = strategy.build_scene(completed_request)
 
+    print("--REQUEST EXECUTED--")
+    
     return report
 
     ...

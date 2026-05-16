@@ -1,108 +1,210 @@
+from dataclasses import replace
+from typing import Dict, Callable
+import json
 
 from .HarmonyAdapterRequest import HarmonyAdapterRequest
 from .complete.AssetEnricher import AssetEnricher
-from dataclasses import replace,asdict
-from typing import Dict,Callable
-import json
-import os
+from .complete.CadreDetector import CadreDetector
+from .model.Shot import ShotNameParser
 
 
 class HarmonyAdapterRequestCompleter:
     """
-    Complete missing data in request
-    (psd infos, cadre rectangles, shot name, context from path, camera etc.)
+    Complete missing request data.
+
+    Examples:
+        - PSD metadata
+        - cadre rectangles
+        - shot name
+        - camera extraction
+        - render settings
+        - pipeline context
     """
-    
     '''
         TODO : extract camera from xstage to an universal camera descriptor and then recreate camera in harmony 
         --> enable to make bringe between harmony and blender later 
     
     '''
 
-    def complete(self, request: HarmonyAdapterRequest) -> HarmonyAdapterRequest:
-        strat = self._get_completion_strategy(request)
-        return strat(request)
-    
-    def _get_completion_strategy(self, request: HarmonyAdapterRequest)->callable:
-        _completion_strategies:Dict[str,Callable]= {
-            "default":self._complete_default,
-            "build_scene":self._complete_build_scene,
-            "preview_shot":self._complete_preview
-        }
-        strat = _completion_strategies[request.name] or _completion_strategies["default"]
-        return strat
+    # -------------------------------------------------------------------------
+    # GLOBAL REGISTRY
+    # -------------------------------------------------------------------------
 
+    _COMPLETION_STRATEGIES: Dict[str, Callable] = {}
 
+    # -------------------------------------------------------------------------
+    # DECORATOR
+    # -------------------------------------------------------------------------
 
-    def _complete_default(self, request: HarmonyAdapterRequest) -> HarmonyAdapterRequest:
+    @classmethod
+    def register_strategy(cls, *names: str):
+
+        def decorator(func):
+
+            for name in names:
+                cls._COMPLETION_STRATEGIES[
+                    name.lower()
+                ] = func
+
+            return func
+
+        return decorator
+
+    # -------------------------------------------------------------------------
+    # INIT
+    # -------------------------------------------------------------------------
+
+    def __init__(self):
+
+        self._cadre_detector = CadreDetector()
+
+    # -------------------------------------------------------------------------
+    # PUBLIC API
+    # -------------------------------------------------------------------------
+
+    def complete(
+        self,
+        request: HarmonyAdapterRequest
+    ) -> HarmonyAdapterRequest:
+
+        strategy_name = (
+            request.name or "default"
+        ).lower()
+
+        strategy = self._COMPLETION_STRATEGIES.get(
+            strategy_name,
+            self._complete_default
+        )
+
+        return strategy(self, request)
+
+    # -------------------------------------------------------------------------
+    # DEFAULT
+    # -------------------------------------------------------------------------
+
+    def _complete_default(
+        self,
+        request: HarmonyAdapterRequest
+    ) -> HarmonyAdapterRequest:
+
         return request
-        ...
-        
-        
-    def _complete_build_scene(self,request: HarmonyAdapterRequest) -> HarmonyAdapterRequest:
 
-        if request.json_input_path is None:
-            return request
 
-        with open(request.json_input_path, "r") as f:
-            data = json.load(f)
+# =============================================================================
+# BUILD SCENE
+# =============================================================================
 
-        assets = data.get("casting", {}).get("assets", [])
+@HarmonyAdapterRequestCompleter.register_strategy("build_scene","build",)
+def complete_build_scene(
+    self,
+    request: HarmonyAdapterRequest
+) -> HarmonyAdapterRequest:
 
-        enricher = AssetEnricher()
+    # yes the request class is a bit overkill for this command as it almost just passes the json path to the js engine 
+    # todo : integrate the json content to the request properly (with model classes ) and creat the json file at the end 
+    if request.json_input_path is None:
+        return request
 
-        data["casting"]["assets"] = enricher.enrich_assets(request,assets)
+    with open(request.json_input_path, "r") as f:
+        data = json.load(f)
 
-        output_path = request.json_input_path.replace(
-            ".json",
-            "_enriched.json"
-        )
+    assets = data.get(
+        "casting",
+        {}
+    ).get(
+        "assets",
+        []
+    )
 
-        with open(output_path, "w") as f:
-            json.dump(data, f, indent=4)
+    # will enrich assets depending on file type or explicit strategy name 
+    enricher = AssetEnricher()
 
-        return replace(
+    data["casting"]["assets"] = (
+        enricher.enrich_assets(
             request,
-            json_input_path=output_path
+            assets
+        )
+    )
+
+    output_path = request.json_input_path.replace(
+        ".json",
+        "_enriched.json"
+    )
+
+    with open(output_path, "w") as f:
+        json.dump(data, f, indent=4)
+
+    return replace(
+        request,
+        json_input_path=output_path
+    )
+
+
+# =============================================================================
+# PREVIEW obsolete command now 
+# =============================================================================
+
+@HarmonyAdapterRequestCompleter.register_strategy("preview_shot","preview","previz",)
+def complete_preview(
+    self,
+    request: HarmonyAdapterRequest
+) -> HarmonyAdapterRequest:
+
+    bg = request.bg
+    shot = request.shot
+    render = request.render
+    name = request.name
+
+    # -------------------------------------------------------------------------
+    # Complete BG cadres
+    # -------------------------------------------------------------------------
+
+    if bg and not bg.cadres:
+
+        detected_cadres = (
+            self._cadre_detector.parse_cadres(
+                bg.path
+            )
         )
 
-        
-    def _complete_preview(self, request: HarmonyAdapterRequest) -> HarmonyAdapterRequest:
-
-        bg = request.bg
-        shot = request.shot
-        render = request.render
-        name = request.name
-
-        # Example 1 — Complete BG cadres
-        if bg and not bg.cadres:
-            detected_cadres = self._cadre_detector.parse_cadres(bg.path)
-            bg = replace(bg, cadres=detected_cadres)
-
-        # Example 2 — Complete shot name from path
-        if shot and not shot.name and shot.path:
-            derived_name = self._extract_shot_name(shot.path)
-            shot = replace(shot, name=derived_name)
-
-        # Example 3 — Derive request name if missing
-        if not name and shot and shot.name:
-            name = f"Previz_{shot.name}"
-            
-        completed_request = replace(
-            request,
-            name=name,
-            bg=bg,
-            shot=shot,
-            render=render
+        bg = replace(
+            bg,
+            cadres=detected_cadres
         )
 
-        # Return NEW immutable instance
-        return completed_request
+    # -------------------------------------------------------------------------
+    # Complete shot name
+    # -------------------------------------------------------------------------
 
-    def _detect_cadres(self, path):
-        # call your CadreDetector here
-        return []
+    if shot and not shot.name and shot.path:
 
-    def _extract_shot_name(self, path):
-        return path.split("/")[-1].split(".")[0]
-    
+        derived_name = (
+            ShotNameParser.parse(
+                shot.path
+            )
+        )
+
+        shot = replace(
+            shot,
+            name=derived_name
+        )
+
+    # -------------------------------------------------------------------------
+    # Auto request naming
+    # -------------------------------------------------------------------------
+
+    if not name and shot and shot.name:
+
+        name = f"Previz_{shot.name}"
+
+    # -------------------------------------------------------------------------
+    # Return immutable request
+    # -------------------------------------------------------------------------
+
+    return replace(
+        request,
+        name=name,
+        bg=bg,
+        shot=shot,
+        render=render
+    )
