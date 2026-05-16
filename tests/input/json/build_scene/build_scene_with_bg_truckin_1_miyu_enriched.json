@@ -5,7 +5,7 @@
         "task_id": 99999,
         "episode": "EP001",
         "sequence": "SQ001",
-        "shot": "SH003",
+        "shot": "SH001",
         "cut_duration": 130
     },
     "template": {
@@ -94,30 +94,30 @@
                         "role": "background",
                         "import_strategy": "use_proxy_image",
                         "deployment_strategy": "place_bg_with_shot_cadre",
-                        "path": "__LIBRARY__/backgrounds/group_based/multishot_123.psd",
+                        "path": "__LIBRARY__/backgrounds/group_based/camera_truckin.psd",
                         "computed": {
                             "cadres": [
                                 {
-                                    "name": "SH003_camera",
-                                    "shot": "SH003",
-                                    "path": "__/group_based/multishot_123.psd",
+                                    "name": "SH001_camera",
+                                    "shot": "SH001",
+                                    "path": "__/group_based/camera_truckin.psd",
                                     "frame": {
-                                        "x": 2091,
-                                        "y": 242,
-                                        "width": 1068,
-                                        "height": 601
+                                        "x": 271,
+                                        "y": 275,
+                                        "width": 2939,
+                                        "height": 1653
                                     },
                                     "background": {
                                         "x": 0,
                                         "y": 0,
-                                        "width": 3450,
-                                        "height": 2293
+                                        "width": 3522,
+                                        "height": 2151
                                     },
-                                    "dcx": 1725,
-                                    "dcy": 1146
+                                    "dcx": 1761,
+                                    "dcy": 1075
                                 }
                             ],
-                            "proxy_image": "D:\\1_TRAVAIL\\WIP\\MIYU\\dev\\repos\\HarmonyAdapter\\tests\\input\\tpl\\library\\backgrounds\\group_based\\multishot_123_proxy.png"
+                            "proxy_image": "D:\\1_TRAVAIL\\WIP\\MIYU\\dev\\repos\\HarmonyAdapter\\tests\\input\\tpl\\library\\backgrounds\\group_based\\camera_truckin_proxy.png"
                         }
                     }
                 ]

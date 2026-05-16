@@ -40,7 +40,7 @@
                     {
                         "type": "TPL",
                         "role":"rig",
-                        "path": "__LIBRARY__/CH_A.tpl"
+                        "path": "__LIBRARY__/characters/dumb/CH_A.tpl"
                     }
                 ]
             },
@@ -53,7 +53,7 @@
                     {
                         "type": "TPL",
                         "role":"rig",
-                        "path": "__LIBRARY__/CH_B.tpl"
+                        "path": "__LIBRARY__/characters/dumb/CH_B.tpl"
                     }
                 ]
             },
@@ -66,7 +66,7 @@
                     {
                         "type": "TPL",
                         "role":"rig",
-                        "path": "__LIBRARY__/CH_C.tpl"
+                        "path": "__LIBRARY__/characters/dumb/CH_C.tpl"
                     }
                 ]
             },
@@ -79,7 +79,7 @@
                     {
                         "type": "TPL",
                         "role":"rig",
-                        "path": "__LIBRARY__/PR_A.tpl"
+                        "path": "__LIBRARY__/props/dumb/PR_A.tpl"
                     }
                 ]
             },
@@ -94,7 +94,7 @@
                         "role":"background",
                         "import_strategy":"use_proxy_image",
                         "deployment_strategy":"place_bg_with_shot_cadre",
-                        "path": "__LIBRARY__/backgrounds/multishot_123_miyu_struct.psd"
+                        "path": "__LIBRARY__/backgrounds/group_based/multishot_123.psd"
                     }
                 ]
             }

@@ -5,7 +5,7 @@
         "task_id": 99999,
         "episode": "EP001",
         "sequence": "SQ001",
-        "shot": "SH003",
+        "shot": "SH001",
         "cut_duration": 130
     },
     "template": {
@@ -94,7 +94,7 @@
                         "role":"background",
                         "import_strategy":"use_proxy_image",
                         "deployment_strategy":"place_bg_with_shot_cadre",
-                        "path": "__LIBRARY__/backgrounds/group_based/multishot_123.psd"
+                        "path": "__LIBRARY__/backgrounds/group_based/camera_truckin.psd"
                     }
                 ]
             }
