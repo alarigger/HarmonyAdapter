@@ -1,0 +1,89 @@
+[TB_StateManager]
+State Count:3
+  [TB_State]
+  Name:"animatedState_1"
+  Frame:1
+  Node Count:6
+    [TB_NodeState]
+    Node:"~/HEAD"
+    Attr Count:1
+      AttrName:"DRAWING.ELEMENT"="1"
+    [TB_NodeState]
+    Node:"~/LEG_F"
+    Attr Count:1
+      AttrName:"DRAWING.ELEMENT"="1"
+    [TB_NodeState]
+    Node:"~/BODY"
+    Attr Count:1
+      AttrName:"DRAWING.ELEMENT"="1"
+    [TB_NodeState]
+    Node:"~/LEG_B"
+    Attr Count:1
+      AttrName:"DRAWING.ELEMENT"="1"
+    [TB_NodeState]
+    Node:"~/LEG_F-P"
+    Attr Count:1
+      AttrName:"POSITION"=0,0,0
+    [TB_NodeState]
+    Node:"~/LEG_B-P"
+    Attr Count:1
+      AttrName:"POSITION"=0,0,0
+
+  [TB_State]
+  Name:"animatedState_2"
+  Frame:2
+  Node Count:6
+    [TB_NodeState]
+    Node:"~/HEAD"
+    Attr Count:1
+      AttrName:"DRAWING.ELEMENT"="2"
+    [TB_NodeState]
+    Node:"~/LEG_F"
+    Attr Count:1
+      AttrName:"DRAWING.ELEMENT"="2"
+    [TB_NodeState]
+    Node:"~/BODY"
+    Attr Count:1
+      AttrName:"DRAWING.ELEMENT"="2"
+    [TB_NodeState]
+    Node:"~/LEG_B"
+    Attr Count:1
+      AttrName:"DRAWING.ELEMENT"="2"
+    [TB_NodeState]
+    Node:"~/LEG_F-P"
+    Attr Count:1
+      AttrName:"POSITION"=-0.183333,0.899998,0
+    [TB_NodeState]
+    Node:"~/LEG_B-P"
+    Attr Count:1
+      AttrName:"POSITION"=-0.433332,1.46666,0
+
+  [TB_State]
+  Name:"animatedState_3"
+  Frame:3
+  Node Count:6
+    [TB_NodeState]
+    Node:"~/HEAD"
+    Attr Count:1
+      AttrName:"DRAWING.ELEMENT"=""
+    [TB_NodeState]
+    Node:"~/LEG_F"
+    Attr Count:1
+      AttrName:"DRAWING.ELEMENT"="3"
+    [TB_NodeState]
+    Node:"~/BODY"
+    Attr Count:1
+      AttrName:"DRAWING.ELEMENT"="3"
+    [TB_NodeState]
+    Node:"~/LEG_B"
+    Attr Count:1
+      AttrName:"DRAWING.ELEMENT"="3"
+    [TB_NodeState]
+    Node:"~/LEG_F-P"
+    Attr Count:1
+      AttrName:"POSITION"=0.358332,0.899998,0
+    [TB_NodeState]
+    Node:"~/LEG_B-P"
+    Attr Count:1
+      AttrName:"POSITION"=-2.26666,1.07778,0
+
