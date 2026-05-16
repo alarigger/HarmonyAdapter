@@ -133,7 +133,7 @@ function AssetFile(data) {
      * Reads from asset_file.computed (injected by Python SceneBuildRunner).
      * @returns {string|null}
      */
-    this.get_proxy_path = function() {
+    this.get_proxy_image_path = function() {
         var computed = this.computed || false;
         if (!computed) return null;
         if (computed.proxy_image && computed.proxy_image.length > 0 ) {

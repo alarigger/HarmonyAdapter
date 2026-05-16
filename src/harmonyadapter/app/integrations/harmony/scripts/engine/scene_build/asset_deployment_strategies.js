@@ -62,11 +62,16 @@ var deployment_strategy_register = new DeploymentStrategiesRegister()
  */
 function _deployment_strategy_non_bg_asset(asset_group, casting_importer) {
 
+    // add basic node for animators 
     asset_group.add_peg()
     asset_group.add_display()
+
+    // set backdrop color
     var backdrop_color = backdrop_asset_type_color_table[asset_group.get_asset_type()] || $.oColorValue("#336600ff")
     asset_group.add_backdrop(backdrop_color)
 
+    //place the asset group sligthly above 0 in Z to be in front of the background and not behind 
+    asset_group.get_node("peg").attributes.position.z.setValue(0.01);
 
     return asset_group
 

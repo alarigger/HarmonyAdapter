@@ -128,14 +128,14 @@ import_strategy_register.add("PSD", _import_strategy_psd)
  */
 function _import_strategy_proxy_image(asset_group) {
 
-    const path = asset_group.get_proxy_path()
+    const image_path = asset_group.get_proxy_image_path()
     var group = asset_group.group
-    if(!path){
-        MessageLog.trace("[use_proxy_image] ERROR! proxy image not found  "+path)
+    if(!image_path){
+        MessageLog.trace("[use_proxy_image] ERROR! proxy image not found  "+image_path)
         return asset_group
     }
-    MessageLog.trace("[use_proxy_image] Importing proxy image "+path)
-    var image_node = group.importImage(path)
+    MessageLog.trace("[use_proxy_image] Importing proxy image "+image_path)
+    var image_node = group.importImage(image_path)
     image_node.linkOutNode(group.multiportOut);
     group.multiportIn.linkOutNode(image_node);
     return asset_group

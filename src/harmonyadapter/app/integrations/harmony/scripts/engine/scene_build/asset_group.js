@@ -4,14 +4,15 @@
 
 function AssetGroupFactory(){
     /**
-     * 
+     * join all model class into one to handle data and concrete building 
      * @param {$.oGroup} group 
      * @param {Asset} asset 
      * @param {AssetFile} asset_file 
      * @returns {AssetGroup}
      */
     this.create = function(group,asset,asset_file){
-        return new AssetGroup(group,asset,asset_file) // wip validate
+        // TODO : validate data 
+        return new AssetGroup(group,asset,asset_file) 
     }
 
 }
@@ -59,8 +60,8 @@ function AssetGroup(group,asset,asset_file){
     this.get_shot_cadre = function() {
         return this.asset_file.get_shot_cadre()
     };    
-    this.get_proxy_path = function() {
-        return this.asset_file.get_proxy_path()
+    this.get_proxy_image_path = function() {
+        return this.asset_file.get_proxy_image_path()
     };
 
 

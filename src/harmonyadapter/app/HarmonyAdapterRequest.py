@@ -8,6 +8,7 @@ from .model.Software import Software
 from typing import Optional
 from dataclasses import dataclass, field
 from typing import Optional
+import json
 
 class InvalidHRequest(Exception):
     pass
@@ -91,6 +92,7 @@ class HarmonyAdapterRequest:
         Resolve shot from existing data or by parsing available paths.
         Priority:
             1. self.shot.name (already resolved)
+            2. json input context (if the request is a scene_build)   TODO : integrate this json better.... 
             2. scene_path
             3. shot.path
         """
@@ -98,14 +100,49 @@ class HarmonyAdapterRequest:
         # 1. Already resolved
         if self.shot and self.shot.name:
             return self.shot
+        
+        # 2. look at the json input file
+ 
+        if self.json_input_path:
 
-        # 2. Collect candidate paths safely
+            try:
+                with open(self.json_input_path, "r") as f:
+                    data = json.load(f)
+
+                context = data.get("context", {})
+
+                shot_name = context.get("shot")
+                episode = context.get("episode")
+
+                if shot_name:
+
+                    if self.shot:
+                        return Shot(
+                            path=self.shot.path,
+                            name=shot_name,
+                            camera=self.shot.camera,
+                            episode=episode
+                        )
+
+                    return Shot(
+                        path=None,
+                        name=shot_name,
+                        camera=None,
+                    )
+
+            except Exception as e:
+                print(
+                    f"[HarmonyAdapterRequest] "
+                    f"Failed parsing JSON shot context: {e}"
+                )       
+
+        # 3. Collect candidate paths safely
         path_candidates = [
             self.scene_path,
             getattr(self.shot, "path", None) if self.shot else None,
         ]
 
-        # 3. Try parsing shot name from paths
+        # 4. Try parsing shot name from paths
         for path in path_candidates:
             if not path:
                 continue
