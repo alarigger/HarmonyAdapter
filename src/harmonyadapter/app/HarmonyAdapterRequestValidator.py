@@ -108,7 +108,7 @@ def validate_build_scene(self,request: HarmonyAdapterRequest) -> list[str]:
         []
     )
 
-    # will enrich assets depending on file type or explicit strategy name 
+    # will validate assets depending on file type 
     validator = AssetValidator()
 
     data["casting"]["assets"] = (

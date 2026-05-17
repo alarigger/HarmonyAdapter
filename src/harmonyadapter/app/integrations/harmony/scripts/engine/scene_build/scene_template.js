@@ -3,11 +3,16 @@
 function Template(data) {
     this.name = data.name != undefined ? data.name : null;
     this.path = data.path != undefined ? resolve_library_path(data.path) : null;;
+
+    //default data
     this.final_composite = "Top/Composite"
+
+    //default data
     this.backdrops = data.backdrops || {
         ANIM:{"title":"ANIM",color:"#ee5a1f",x:-1000,y:-1000,w:2000,h:500},
         BG:{"title":"BG",color:"#da43a0",    x:1000,    y:-1000,w:1000,h:500}
     }
+    //default data
     this.backdrop_map = data.backdrop_map || {
         "Character":"ANIM",
         "Prop":"ANIM",
@@ -17,6 +22,7 @@ function Template(data) {
         "Reference":"REF",
         "Animatic":"REF"
     }
+    //default data
     this.composite_map = data.composite_map || {
         "Character":"Top/Composite",
         "Prop":"Top/Composite",
