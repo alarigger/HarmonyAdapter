@@ -62,7 +62,7 @@ var deployment_strategy_register = new DeploymentStrategiesRegister()
  */
 function _deployment_strategy_non_bg_asset(asset_group, casting_importer) {
 
-    // add basic node for animators 
+    // add basic nodes for animators 
     asset_group.add_peg()
     asset_group.add_display()
 

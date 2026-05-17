@@ -5,12 +5,12 @@
         "task_id": 99999,
         "episode": "EP001",
         "sequence": "SQ001",
-        "shot": "SH001",
+        "shot": "SH003",
         "cut_duration": 130
     },
     "template": {
         "name": "template_shot",
-        "path": "",
+        "path": "__LIBRARY__/scene_templates/default_shot.tpl",
         "backdrop_map" : {
             "Character":"ANIM",
             "Prop":"ANIM",
@@ -19,14 +19,14 @@
             "Background":"BG",
             "Reference":"REF"
         },
-        "final_composite" : "Top/Composite",
+        "final_composite" : "Top/FINAL",
         "composite_map" : {
-            "Character":"Top/Composite",
-            "Prop":"Top/Composite",
-            "FX":"Top/Composite",
-            "BG":"Top/Composite",
-            "Background":"Top/Composite",
-            "Reference":"Top/Composite"
+            "Character":"Top/ANIM-C",
+            "Prop":"Top/ANIM-C",
+            "FX":"Top/ANIM-C",
+            "BG":"Top/BG-C",
+            "Background":"Top/BG-C",
+            "Reference":"Top/ANIM-C"
         }
     },
     "casting": {
@@ -94,7 +94,7 @@
                         "role":"background",
                         "import_strategy":"use_proxy_image",
                         "deployment_strategy":"place_bg_with_shot_cadre",
-                        "path": "__LIBRARY__/backgrounds/camera_panH_miyu_struct.psd"
+                        "path": "__LIBRARY__/backgrounds/group_based/multishot_123.psd"
                     }
                 ]
             }

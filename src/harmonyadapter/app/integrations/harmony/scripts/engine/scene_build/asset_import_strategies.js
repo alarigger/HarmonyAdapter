@@ -36,12 +36,13 @@ var import_strategy_register = new ImportStrategiesRegister()
 
 
 /**
- * Import TPL
+ * Import TPL with replacement
  * @param {AssetGroup} asset_group
  * @returns {AssetGroup}
  */
-function _import_strategy_tpl(asset_group) {
+function _import_strategy_tpl_replace_wrapper(asset_group) {
 
+    var node_manager = new NodeManager()
     const path = asset_group.get_path()
     var group = asset_group.group
 
@@ -100,7 +101,64 @@ function _import_strategy_tpl(asset_group) {
 
     return asset_group
 }
-import_strategy_register.add("TPL", _import_strategy_tpl)
+//import_strategy_register.add("TPL", _import_strategy_tpl_replace_group)  // potentialy unsafe 
+// this importation method rely too much on tpl structure and can cause damage during importation
+// the head and foot part should be registered during deployement not during importation 
+// importation regards only the inside of the wrapper group 
+
+
+/**
+ * Import TPL and keep importation group 
+ * @param {AssetGroup} asset_group
+ * @returns {AssetGroup}
+ */
+function _import_strategy_tpl_in_wrapper_group(asset_group) {
+
+    var node_manager = new NodeManager()
+    const path = asset_group.get_path()
+
+    var nodes = asset_group.group.importTemplate(path);
+    MessageLog.trace("[TPL] imported nodes raw: " + nodes);
+
+    if (!nodes) {
+        MessageLog.trace("[TPL] ERROR Import failed: " + path);
+        return null;
+    }
+
+    // Normalize to array
+    if (!Array.isArray(nodes)) {
+        nodes = [nodes];
+    }
+
+    if (nodes.length === 0) {
+        MessageLog.trace("[TPL] ERROR Empty import result: " + path);
+        return null;
+    }
+    var firstNode = nodes[0];
+    MessageLog.trace("[TPL] first node type: " + node.type(firstNode.path) + " path: " + firstNode.path);
+
+    // connect the first node to the wrapper group multiports 
+    asset_group.group.multiportIn.linkOutNode(firstNode)
+    firstNode.linkOutNode(asset_group.group.multiportOut)
+
+    if (node.type(firstNode.path) == "GROUP") {
+
+        // the tpl is inside a group , as recommanded for smooth importation
+        firstNode.linkOutNode(asset_group.group.multiportOut)
+
+        // TODO : linkout ALL group output
+
+        // we ungroup it with the explode func that recreate the connections 
+        nodes = node_manager.ungroup(firstNode)
+    }else{
+        // case the tpl content is raw nodes .. 
+        var lastNode = nodes[nodes.length-1] // wild guess .. todo detect lowest image node 
+        lastNode.linkOutNode(asset_group.group.multiportOut)
+    }
+
+    return asset_group
+}
+import_strategy_register.add("TPL", _import_strategy_tpl_in_wrapper_group)
 
 
 

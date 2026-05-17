@@ -1,0 +1,127 @@
+{
+    "context": {
+        "project": "myProject",
+        "task_name": "animation",
+        "task_id": 99999,
+        "episode": "EP001",
+        "sequence": "SQ001",
+        "shot": "SH003",
+        "cut_duration": 130
+    },
+    "template": {
+        "name": "template_shot",
+        "path": "__LIBRARY__/scene_templates/default_shot.tpl",
+        "backdrop_map": {
+            "Character": "ANIM",
+            "Prop": "ANIM",
+            "FX": "ANIM",
+            "BG": "BG",
+            "Background": "BG",
+            "Reference": "REF"
+        },
+        "final_composite": "Top/FINAL",
+        "composite_map": {
+            "Character": "Top/ANIM-C",
+            "Prop": "Top/ANIM-C",
+            "FX": "Top/ANIM-C",
+            "BG": "Top/BG-C",
+            "Background": "Top/BG-C",
+            "Reference": "Top/ANIM-C"
+        }
+    },
+    "casting": {
+        "assets": [
+            {
+                "id": 1,
+                "name": "CH_A",
+                "type": "Character",
+                "subType": "mainpack",
+                "files": [
+                    {
+                        "type": "TPL",
+                        "role": "rig",
+                        "path": "__LIBRARY__/characters/dumb/CH_A.tpl"
+                    }
+                ]
+            },
+            {
+                "id": 2,
+                "name": "CH_B",
+                "type": "Character",
+                "subType": "mainpack",
+                "files": [
+                    {
+                        "type": "TPL",
+                        "role": "rig",
+                        "path": "__LIBRARY__/characters/dumb/CH_B.tpl"
+                    }
+                ]
+            },
+            {
+                "id": 3,
+                "name": "CH_C",
+                "type": "Character",
+                "subType": "secondary",
+                "files": [
+                    {
+                        "type": "TPL",
+                        "role": "rig",
+                        "path": "__LIBRARY__/characters/dumb/CH_C.tpl"
+                    }
+                ]
+            },
+            {
+                "id": 4,
+                "name": "PR_A",
+                "type": "Prop",
+                "subType": "mainpack",
+                "files": [
+                    {
+                        "type": "TPL",
+                        "role": "rig",
+                        "path": "__LIBRARY__/props/dumb/PR_A.tpl"
+                    }
+                ]
+            },
+            {
+                "id": 5,
+                "name": "BG_A",
+                "type": "Background",
+                "subType": "mainpack",
+                "files": [
+                    {
+                        "type": "PSD",
+                        "role": "background",
+                        "import_strategy": "use_proxy_image",
+                        "deployment_strategy": "place_bg_with_shot_cadre",
+                        "path": "__LIBRARY__/backgrounds/group_based/multishot_123.psd",
+                        "computed": {
+                            "cadres": [
+                                {
+                                    "name": "SH003_camera",
+                                    "shot": "SH003",
+                                    "path": "__/group_based/multishot_123.psd",
+                                    "frame": {
+                                        "x": 2091,
+                                        "y": 242,
+                                        "width": 1068,
+                                        "height": 601
+                                    },
+                                    "background": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "width": 3450,
+                                        "height": 2293
+                                    },
+                                    "dcx": 1725,
+                                    "dcy": 1146
+                                }
+                            ],
+                            "proxy_image": "D:\\1_TRAVAIL\\WIP\\MIYU\\dev\\repos\\HarmonyAdapter\\tests\\input\\tpl\\library\\backgrounds\\group_based\\multishot_123_proxy.png"
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -12,6 +12,10 @@ function AssetGroupFactory(){
      */
     this.create = function(group,asset,asset_file){
         // TODO : validate data 
+        var node_manager = new NodeManager()
+        node_manager.add_attribute(group,"asset_file_path",asset_file.path)
+        node_manager.add_attribute(group,"asset_name",asset.name)
+        node_manager.mark_node(group)
         return new AssetGroup(group,asset,asset_file) 
     }
 
