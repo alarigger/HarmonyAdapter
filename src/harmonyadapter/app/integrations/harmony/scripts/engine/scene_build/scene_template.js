@@ -299,7 +299,7 @@ function Template(data) {
  */
 function NodeReplacer(){
 
-    this._prefix = "REPLACE_WITH-";
+    this._prefix = "REPLACE_WITH--";
 
     /**
      * @param {Array<$.oNode>} node_list
@@ -357,48 +357,28 @@ function NodeReplacer(){
      * @return {$.oNode|null}
      */
     this._resolve_target_node = function(_node,existing_nodes){
-
         if (!_node || !_node.name) {
             return null;
         }
-
         var name = _node.name;
-
-        //-----------------------------------------
-        // Must start with prefix
-        //-----------------------------------------
 
         if (name.indexOf(this._prefix) !== 0) {
             return null;
         }
-
-        //-----------------------------------------
-        // Extract target name
-        //-----------------------------------------
-
         var target_name = name.substr(this._prefix.length);
-
-        //-----------------------------------------
-        // Find original scene node
-        //-----------------------------------------
-
-        path_guess = "Top/"+target_name
+        const path_guess = "Top/"+target_name
 
         if (existing_nodes[path_guess]) {
-
             MessageLog.trace(
                 "[NodeReplacer] found target: " +
                 target_name
             );
-
             return existing_nodes[path_guess];
         }
-
         MessageLog.trace(
             "[NodeReplacer] target missing: " +
             path_guess
         );
-
         return null;
     };
 
@@ -424,72 +404,35 @@ function NodeReplacer(){
             _new_node.name
         );
 
-        //-----------------------------------------
-        // INPUT LINKS
-        //-----------------------------------------
-
-        var in_links = _old_node.inLinks;
-
-        for (var i = 0; i < in_links.length; i++) {
-
-            var link = in_links[i];
-
-            try {
-
-                link.outNode.linkOutNode(
-                    _new_node,
-                    link.outPort,
-                    link.inPort
-                );
-
-            } catch(err) {
-
-                MessageLog.trace(
-                    "input relink failed: " + err
-                );
-            }
+        //unlink the new_node (quick and dirty method for now )
+        node.unlink(_new_node, 0);
+        for(var i = 0 ; i < 10 ;i++){
+            _new_node.unlinkInPort(i)
+            _new_node.unlinkOutPort(i)
         }
 
-        //-----------------------------------------
-        // OUTPUT LINKS
-        //-----------------------------------------
-
-        var out_links = _old_node.outLinks;
-
-        for (var o = 0; o < out_links.length; o++) {
-
-            var out_link = out_links[o];
-
-            try {
-
-                _new_node.linkOutNode(
-                    out_link.inNode,
-                    out_link.outPort,
-                    out_link.inPort
-                );
-
-            } catch(err2) {
-
-                MessageLog.trace(
-                    "output relink failed: " + err2
-                );
-            }
-        }
-
-        //-----------------------------------------
-        // Remove placeholder
-        //-----------------------------------------
-
+        var in_nodes = _old_node.linkedInNodes
+        var out_nodes = _old_node.linkedOutNodes
+        var old_x = _old_node.x
+        var old_y = _old_node.y
         try {
-
             _old_node.remove();
-
         } catch(remove_err) {
-
             MessageLog.trace(
                 "remove failed: " + remove_err
             );
         }
+
+        for (var i = 0; i < in_nodes.length; i++) {
+            in_nodes[i].linkOutNode(_new_node)
+        }        
+        for (var o = 0; o < out_nodes.length; o++) {
+            _new_node.linkOutNode(out_nodes[o])
+        }
+
+        _new_node.x = old_x
+        _new_node.y = old_y
+
     };
 }
 

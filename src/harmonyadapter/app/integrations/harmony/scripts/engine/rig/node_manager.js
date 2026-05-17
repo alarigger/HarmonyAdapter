@@ -103,21 +103,6 @@ function NodeManager() {
         if (!id) return null;
 
         //-----------------------------------------
-        // 1. fast lookup cache
-        //-----------------------------------------
-
-        if (this._map[id]) {
-
-            // validate still exists in scene
-            try {
-                var test = this._map[id].name;
-                return this._map[id];
-            } catch (e) {
-                delete this._map[id];
-            }
-        }
-
-        //-----------------------------------------
         // 2. fallback scan (after explode)
         //-----------------------------------------
 
@@ -129,12 +114,12 @@ function NodeManager() {
 
             try {
 
-                var id = node.getTextAttr(_node.path, 1, this._attrName);
+                var value = node.getTextAttr(_node.path, 1, this._attrName);
 
                 if (value == id) {
 
-                    this._map[id] = n;
-                    return n;
+                    this._map[id] = _node;
+                    return _node;
                 }
 
             } catch (err) {
@@ -218,6 +203,9 @@ function NodeManager() {
                 result_nodes.push(found);
             }
         }
+
+        MessageLog.trace("[NodeManager] ungrouped nodes : ")
+        MessageLog.trace("[NodeManager]"+result_nodes)
 
         //---------------------------------------------
         // 4. Return fresh node references
