@@ -1,6 +1,6 @@
 from app.model.BG import BG,BGFactory
 from app.model.Cadre import Cadre,CadreFactory
-from app.model.Shot import Shot
+from app.model.Shot import Shot,ShotNameParser
 from app.model.Render import Render
 from app.model.Build import Build
 from app.model.Camera import Camera
@@ -8,6 +8,7 @@ from app.model.Software import Software
 from typing import Optional
 from dataclasses import dataclass, field
 from typing import Optional
+import json
 
 class InvalidHRequest(Exception):
     pass
@@ -23,6 +24,7 @@ class HarmonyAdapterRequest:
     bg: Optional['BG'] = None
     shot: Optional['Shot'] = None
     render: Optional['Render'] = None
+    cadre:Optional['Cadre'] = None
     json_path: Optional[str] = None
     json_input_path: Optional[str] = None
     output_path:Optional[str] = None
@@ -83,7 +85,88 @@ class HarmonyAdapterRequest:
             return Software.from_file(self.scene_path)
         if self.shot and self.shot.path:
             return Software.from_file(self.shot.path)        
-        return Software.UNKNOWN
+        return Software.UNKNOWN    
+    
+    def get_shot(self) -> Optional["Shot"]:
+        """
+        Resolve shot from existing data or by parsing available paths.
+        Priority:
+            1. self.shot.name (already resolved)
+            2. json input context (if the request is a scene_build)   TODO : integrate this json better.... 
+            2. scene_path
+            3. shot.path
+        """
+
+        # 1. Already resolved
+        if self.shot and self.shot.name:
+            return self.shot
+        
+        # 2. look at the json input file
+ 
+        if self.json_input_path:
+
+            try:
+                with open(self.json_input_path, "r") as f:
+                    data = json.load(f)
+
+                context = data.get("context", {})
+
+                shot_name = context.get("shot")
+                episode = context.get("episode")
+
+                if shot_name:
+
+                    if self.shot:
+                        return Shot(
+                            path=self.shot.path,
+                            name=shot_name,
+                            camera=self.shot.camera,
+                            episode=episode
+                        )
+
+                    return Shot(
+                        path=None,
+                        name=shot_name,
+                        camera=None,
+                    )
+
+            except Exception as e:
+                print(
+                    f"[HarmonyAdapterRequest] "
+                    f"Failed parsing JSON shot context: {e}"
+                )       
+
+        # 3. Collect candidate paths safely
+        path_candidates = [
+            self.scene_path,
+            getattr(self.shot, "path", None) if self.shot else None,
+        ]
+
+        # 4. Try parsing shot name from paths
+        for path in path_candidates:
+            if not path:
+                continue
+
+            shot_name = ShotNameParser.parse(path)
+
+            if shot_name:
+                # Build or update Shot object
+                if self.shot:
+                    return Shot(
+                        path=self.shot.path,
+                        name=shot_name,
+                        camera=self.shot.camera,
+                    )
+
+                return Shot(
+                    path=path,
+                    name=shot_name,
+                    camera=None,
+                )
+
+        return self.shot
+        
+    
     
 class HarmonyAdapterRequestFactory():
     '''
@@ -156,6 +239,8 @@ class HarmonyAdapterRequestFactory():
                     camera = Camera()
                     camera.name = str(cli_args.camera)
                     shot.camera = camera
+                    
+        
 
         # -------- Render --------
         render = None
@@ -199,19 +284,25 @@ class HarmonyAdapterRequestFactory():
 
         
         
-    def parse_from_module_func(self,name: str,bg_path: str,**kwargs) -> HarmonyAdapterRequest:
+    def parse_from_module_func(self, name: str, **kwargs):
 
-        # Build BG object first (if relevant to your design)
-        bg = BG(path=bg_path) if bg_path else None
+        # Build a CLI-like object
+        cli_args = type("Args", (), {})()
 
-        # Build base argument dictionary
-        data = {
-            "name": name,
-            "bg": bg,
-        }
+        cli_args.request_name = name
+        cli_args.shot_file = kwargs.get("shot_file")
+        cli_args.shot_name = kwargs.get("shot_name")
+        cli_args.camera = kwargs.get("camera")
 
-        # Merge extra allowed fields
-        data.update(kwargs)
+        cli_args.output_type = kwargs.get("output_type")
+        cli_args.output_path = kwargs.get("output_path")
 
-        # Single immutable construction
-        return HarmonyAdapterRequest(**data)
+        cli_args.cadre = kwargs.get("cadre")
+
+        cli_args.json_path = kwargs.get("json_path")
+        cli_args.json_input_path = kwargs.get("json_input_path")
+
+        cli_args.scene_path = kwargs.get("scene_path")
+
+        # IMPORTANT: reuse CLI parser
+        return self.parse_from_cli(cli_args)

@@ -1,0 +1,642 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project  source="Harmony Premium (HarmonyPremium.exe) version 25.1.0 build 24630 2025-12-02 22:03:23" version="2510" build="24630" date="Mon May 18 00:54:43 2026" timeMsec="1779058483665" username="Canard" realUsername="Canard" creator="harmony">
+ <elements>
+  <element id="1" elementName="REPLACE_WITH--Animatic" elementFolder="REPLACE_WITH--Animatic" pixmapFormat="2" scanType="2" fieldChart="12" vectorType="2" rootFolder="elements"/>
+ </elements>
+ <options>
+  <metrics unitAspectRatioX="4" unitAspectRatioY="3" numberOfUnitsX="24" numberOfUnitsY="24" numberOfUnitsZ="12"/>
+  <resolution name="HDTV_1080p25" size="1920,1080" fovFit="VerticalFitFov" fov="41.112090439166927" projection="PerspectiveProjection"/>
+  <framerate val="25"/>
+  <zdragging val="true"/>
+  <zOrderCompatibilityWith7_3 val="false"/>
+  <pixelPerModelUnitForVectorLayers val="0.28800000000000009"/>
+  <pixelPerModelUnitForBitmapLayers val="0.28800000000000009"/>
+  <canvasForBitmapLayers size="3840,2160"/>
+  <imageProcessingFormat val="rgbaFloat"/>
+  <cameraInSymbols val="true"/>
+  <scaleFactor val="1"/>
+  <colorSpace val="sRGB"/>
+  <textureColorSpace val="sRGB"/>
+  <convertPalettesColorSpace val="true"/>
+  <tvgRecoveryTexture val="true"/>
+ </options>
+ <timelineMarkers/>
+ <scenes>
+  <scene name="Top" id="0d2c43b885004a2f" nbframes="60" startFrame="1" stopFrame="1">
+   <columns>
+    <column type="0" name="ATV-0DA32C5C43B5B86985004A51" color="#FFFFFFFF" displayOrder="0" width="100" anonymous="true" id="1"/>
+   </columns>
+   <options>
+    <defaultDisplay val="Unconnected_Display"/>
+   </options>
+   <rootgroup name="Top">
+    <options>
+     <collapsed val="false"/>
+    </options>
+    <nodeslist>
+     <group name="TEMPLATE" pos="0,26,1">
+      <options>
+       <collapsed val="false"/>
+       <subnodeCollapsed val="true"/>
+       <showsPublished val="true"/>
+      </options>
+      <attrs/>
+      <nodeslist>
+       <module type="MULTIPORT_IN" name="Multi-Port-In" pos="11,-682,2">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+        <ports>
+         <port type="PEG" idx="0"/>
+        </ports>
+       </module>
+       <module type="DISPLAY" name="ANIM-D" pos="981,-157,12" publishUnderTab="Display_1">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+       </module>
+       <module type="DISPLAY" name="ANIM+BG-D" pos="375,11,10" publishUnderTab="Animation-D">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+       </module>
+       <module type="DISPLAY" name="ANIM+ATQ-D" pos="945,-10,13" publishUnderTab="Animation-D">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+       </module>
+       <module type="COMPOSITE" name="ANIM+ATQ-C" pos="914,-53,8" publishUnderTab="Animation-C">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+        <attrs>
+         <compositeMode val="compositePassthrough"/>
+         <flattenOutput val="false"/>
+         <flattenVector val="false"/>
+         <composite2d val="false"/>
+         <composite3d val="false"/>
+         <outputZ val="LEFTMOST"/>
+         <outputZInputPort val="1"/>
+         <applyFocus val="true"/>
+         <multiplier val="1" defaultValue="1"/>
+         <tvgPalette val="compositedPalette"/>
+         <mergeVector val="false"/>
+        </attrs>
+       </module>
+       <module type="COMPOSITE" name="BG-C" pos="-258,-209,19" publishUnderTab="Composite">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+        <attrs>
+         <compositeMode val="compositePassthrough"/>
+         <flattenOutput val="false"/>
+         <flattenVector val="false"/>
+         <composite2d val="false"/>
+         <composite3d val="false"/>
+         <outputZ val="LEFTMOST"/>
+         <outputZInputPort val="1"/>
+         <applyFocus val="true"/>
+         <multiplier val="1" defaultValue="1"/>
+         <tvgPalette val="compositedPalette"/>
+         <mergeVector val="false"/>
+        </attrs>
+       </module>
+       <module type="COMPOSITE" name="COMPO-C" pos="345,418,14" publishUnderTab="Animation+Background-C">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+        <attrs>
+         <compositeMode val="compositePassthrough"/>
+         <flattenOutput val="false"/>
+         <flattenVector val="false"/>
+         <composite2d val="false"/>
+         <composite3d val="false"/>
+         <outputZ val="LEFTMOST"/>
+         <outputZInputPort val="1"/>
+         <applyFocus val="true"/>
+         <multiplier val="1" defaultValue="1"/>
+         <tvgPalette val="compositedPalette"/>
+         <mergeVector val="false"/>
+        </attrs>
+       </module>
+       <module type="COMPOSITE" name="ANIM-C" pos="966,-211,17" publishUnderTab="Composite">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+        <attrs>
+         <compositeMode val="compositePassthrough"/>
+         <flattenOutput val="false"/>
+         <flattenVector val="false"/>
+         <composite2d val="false"/>
+         <composite3d val="false"/>
+         <outputZ val="LEFTMOST"/>
+         <outputZInputPort val="1"/>
+         <applyFocus val="true"/>
+         <multiplier val="1" defaultValue="1"/>
+         <tvgPalette val="compositedPalette"/>
+         <mergeVector val="false"/>
+        </attrs>
+       </module>
+       <module type="COMPOSITE" name="ANIM+BG-C" pos="341,-27,15" publishUnderTab="Composite_1">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+        <attrs>
+         <compositeMode val="compositePassthrough"/>
+         <flattenOutput val="false"/>
+         <flattenVector val="false"/>
+         <composite2d val="false"/>
+         <composite3d val="false"/>
+         <outputZ val="LEFTMOST"/>
+         <outputZInputPort val="1"/>
+         <applyFocus val="true"/>
+         <multiplier val="1" defaultValue="1"/>
+         <tvgPalette val="compositedPalette"/>
+         <mergeVector val="false"/>
+        </attrs>
+       </module>
+       <module type="WRITE" name="REPLACE_WITH--Write" pos="207,715,18" publishUnderTab="Write">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+        <attrs>
+         <exportToMovie val="false"/>
+         <drawingName val="frames/final-"/>
+         <moviePath val="frames/output"/>
+         <movieFormat val="com.toonboom.quicktime.legacy"/>
+         <movieAudio val=""/>
+         <movieVideo val=""/>
+         <movieVideoaudio val=""/>
+         <leadingZeros val="3"/>
+         <start val="1"/>
+         <drawingType val="TGA"/>
+         <enabling>
+          <filter val="ALWAYS"/>
+          <filterName val=""/>
+          <filterResX val="720"/>
+          <filterResY val="540"/>
+         </enabling>
+         <scriptMovie val="false"/>
+         <scriptEditor val="// Following code will be called at the end of Write Node rendering
+// operations to create a movie file from rendered images.
+
+// ..."/>
+         <colorSpace val=""/>
+         <compositePartitioning val="NoCompositePartitioning"/>
+         <zPartitionRange val="1" defaultValue="1"/>
+         <cleanUpPartitionFolders val="true"/>
+        </attrs>
+       </module>
+       <module type="DISPLAY" name="REPLACE_WITH--Display" pos="393,715,1" publishUnderTab="Display">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+       </module>
+       <module type="PEG" name="REPLACE_WITH--Animatic-P" pos="-1125,-309,7" publishUnderTab="REPLACE_WITH--Animatic-P">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+        <attrs>
+         <enable3d val="false"/>
+         <faceCamera val="false"/>
+         <cameraAlignment val="NO_CAMERA_ALIGNMENT"/>
+         <position>
+          <separate val="false"/>
+          <x val="0" defaultValue="0"/>
+          <y val="0" defaultValue="0"/>
+          <z val="0" defaultValue="0"/>
+         </position>
+         <scale>
+          <separate val="true"/>
+          <inFields val="false"/>
+          <xy val="1" defaultValue="1"/>
+          <x val="1" defaultValue="1"/>
+          <y val="1" defaultValue="1"/>
+          <z val="1" defaultValue="1"/>
+         </scale>
+         <rotation>
+          <separate val="false"/>
+          <anglex val="0" defaultValue="0"/>
+          <angley val="0" defaultValue="0"/>
+          <anglez val="0" defaultValue="0"/>
+         </rotation>
+         <angle val="0" defaultValue="0"/>
+         <skew val="0" defaultValue="0"/>
+         <pivot>
+          <x val="0" defaultValue="0"/>
+          <y val="0" defaultValue="0"/>
+          <z val="0" defaultValue="0"/>
+         </pivot>
+         <splineOffset>
+          <x val="0" defaultValue="0"/>
+          <y val="0" defaultValue="0"/>
+          <z val="0" defaultValue="0"/>
+         </splineOffset>
+         <ignoreParentPegScaling val="false"/>
+         <disableFieldRendering val="false"/>
+         <depth val="0"/>
+         <enableMinMaxAngle val="false"/>
+         <minAngle val="-360" defaultValue="-360"/>
+         <maxAngle val="360" defaultValue="360"/>
+         <nailForChildren val="false"/>
+         <ikHoldOrientation val="false"/>
+         <ikHoldX val="false"/>
+         <ikHoldY val="false"/>
+         <ikExcluded val="false"/>
+         <ikCanRotate val="true"/>
+         <ikCanTranslateX val="false"/>
+         <ikCanTranslateY val="false"/>
+         <ikBoneX val="0.20000000000000001" defaultValue="0.20000000000000001"/>
+         <ikBoneY val="0" defaultValue="0"/>
+         <ikStiffness val="1" defaultValue="1"/>
+         <groupAtNetworkBuilding val="false"/>
+         <addCompositeToGroup val="true"/>
+        </attrs>
+       </module>
+       <group name="ATQ-Effects" pos="-1098,-213,5">
+        <options>
+         <collapsed val="false"/>
+         <subnodeCollapsed val="true"/>
+         <showsPublished val="true"/>
+        </options>
+        <attrs/>
+        <nodeslist>
+         <module type="MULTIPORT_IN" name="Multi-Port-In" pos="-1106,-313,0">
+          <options>
+           <collapsed val="false"/>
+           <version val="1"/>
+          </options>
+          <ports>
+           <port type="IMAGE" idx="0"/>
+          </ports>
+         </module>
+         <module type="MULTIPORT_OUT" name="Multi-Port-Out" pos="-1106,-83,0">
+          <options>
+           <collapsed val="false"/>
+           <version val="1"/>
+          </options>
+          <ports>
+           <port type="IMAGE" idx="0"/>
+          </ports>
+         </module>
+         <module type="FADE" name="ATQ-Transparency" pos="-1106,-213,1" publishUnderTab="Transparency">
+          <options>
+           <collapsed val="false"/>
+           <version val="1"/>
+          </options>
+          <attrs>
+           <transparency val="50" defaultValue="50"/>
+          </attrs>
+         </module>
+        </nodeslist>
+        <linkedlist>
+         <link out="Multi-Port-In" in="ATQ-Transparency"/>
+         <link out="ATQ-Transparency" in="Multi-Port-Out"/>
+        </linkedlist>
+       </group>
+       <module type="READ" name="REPLACE_WITH--Animatic" pos="-1139,-267,6" publishUnderTab="Drawing">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+        <attrs>
+         <enable3d val="false"/>
+         <faceCamera val="false"/>
+         <cameraAlignment val="NO_CAMERA_ALIGNMENT"/>
+         <offset>
+          <separate val="true"/>
+          <x val="0" defaultValue="0"/>
+          <y val="0" defaultValue="0"/>
+          <z val="0" defaultValue="0"/>
+         </offset>
+         <scale>
+          <separate val="true"/>
+          <inFields val="false"/>
+          <xy val="1" defaultValue="1"/>
+          <x val="1" defaultValue="1"/>
+          <y val="1" defaultValue="1"/>
+          <z val="1" defaultValue="1"/>
+         </scale>
+         <rotation>
+          <separate val="false"/>
+          <anglex val="0" defaultValue="0"/>
+          <angley val="0" defaultValue="0"/>
+          <anglez val="0" defaultValue="0"/>
+         </rotation>
+         <angle val="0" defaultValue="0"/>
+         <skew val="0" defaultValue="0"/>
+         <pivot>
+          <x val="0" defaultValue="0"/>
+          <y val="0" defaultValue="0"/>
+          <z val="0" defaultValue="0"/>
+         </pivot>
+         <splineOffset>
+          <x val="0" defaultValue="0"/>
+          <y val="0" defaultValue="0"/>
+          <z val="0" defaultValue="0"/>
+         </splineOffset>
+         <ignoreParentPegScaling val="false"/>
+         <disableFieldRendering val="false"/>
+         <depth val="0"/>
+         <enableMinMaxAngle val="false"/>
+         <minAngle val="-360" defaultValue="-360"/>
+         <maxAngle val="360" defaultValue="360"/>
+         <nailForChildren val="false"/>
+         <ikHoldOrientation val="false"/>
+         <ikHoldX val="false"/>
+         <ikHoldY val="false"/>
+         <ikExcluded val="false"/>
+         <ikCanRotate val="true"/>
+         <ikCanTranslateX val="false"/>
+         <ikCanTranslateY val="false"/>
+         <ikBoneX val="0.20000000000000001" defaultValue="0.20000000000000001"/>
+         <ikBoneY val="0" defaultValue="0"/>
+         <ikStiffness val="1" defaultValue="1"/>
+         <drawing>
+          <elementMode val="true"/>
+          <element col="ATV-0DA32C5C43B5B86985004A51">
+           <layer val=""/>
+          </element>
+          <customName>
+           <name val=""/>
+           <extension val="tga"/>
+           <fieldChart val="12" defaultValue="12"/>
+          </customName>
+         </drawing>
+         <readOverlay val="true"/>
+         <readLineArt val="true"/>
+         <readColorArt val="true"/>
+         <readUnderlay val="true"/>
+         <overlayArtDrawingMode val="VectorDrawingMode"/>
+         <lineArtDrawingMode val="VectorDrawingMode"/>
+         <colorArtDrawingMode val="VectorDrawingMode"/>
+         <underlayArtDrawingMode val="VectorDrawingMode"/>
+         <pencilLineDeformationPreserveThickness val="false"/>
+         <pencilLineDeformationQuality val="Low"/>
+         <pencilLineDeformationSmooth val="1"/>
+         <pencilLineDeformationFitError val="3" defaultValue="3"/>
+         <readColor val="true"/>
+         <readTransparency val="true"/>
+         <colorTransformation val="Linear"/>
+         <colorSpace val="sRGB"/>
+         <applyMatteToColor val="N"/>
+         <enableLineTexture val="true"/>
+         <antialiasingQuality val="HIGH"/>
+         <antialiasingExponent val="1" defaultValue="1"/>
+         <opacity val="100" defaultValue="100"/>
+         <textureFilter val="NEAREST_FILTERED"/>
+         <adjustPencilThickness val="false"/>
+         <normalLineArtThickness val="true"/>
+         <zoomIndependentLineArtThickness val="zoomIndependent"/>
+         <multLineArtThickness val="1" defaultValue="1"/>
+         <addLineArtThickness val="0" defaultValue="0"/>
+         <minLineArtThickness val="0" defaultValue="0"/>
+         <maxLineArtThickness val="0" defaultValue="0"/>
+         <useDrawingPivot val="APPLY_ON_READ_TRANSFORM"/>
+         <flipHor val="false"/>
+         <flipVert val="false"/>
+         <turnBeforeAlignment val="false"/>
+         <noClipping val="false"/>
+         <xClipFactor val="0"/>
+         <yClipFactor val="0"/>
+         <alignmentRule val="CENTER_FIRST_PAGE"/>
+         <morphingVelo val="0" defaultValue="0"/>
+         <canAnimate val="true"/>
+         <tileHorizontal val="false"/>
+         <tileVertical val="false"/>
+         <framerate val="-1" defaultValue="-1"/>
+         <useFileUnits val="true"/>
+        </attrs>
+       </module>
+       <module type="DISPLAY" name="COMPO-D" pos="370,455,11" publishUnderTab="Animation+Animatic-D">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+       </module>
+       <module type="CAMERA" name="REPLACE_WITH--Camera" pos="-1258,-486,9" publishUnderTab="Camera">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+        <attrs>
+         <offset>
+          <x val="0" defaultValue="0"/>
+          <y val="0" defaultValue="0"/>
+          <z val="12" defaultValue="0"/>
+         </offset>
+         <pivot>
+          <x val="0" defaultValue="0"/>
+          <y val="0" defaultValue="0"/>
+         </pivot>
+         <angle val="0" defaultValue="0"/>
+         <overrideSceneFov val="false"/>
+         <fov val="41.112090439166927" defaultValue="41.112000000000002"/>
+         <nearPlane val="0.10000000000000001" defaultValue="1"/>
+         <farPlane val="1000" defaultValue="1000"/>
+        </attrs>
+       </module>
+       <module type="COMPOSITE" name="Final-C" pos="343,640,16" publishUnderTab="Composite">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+        <attrs>
+         <compositeMode val="compositePassthrough"/>
+         <flattenOutput val="false"/>
+         <flattenVector val="false"/>
+         <composite2d val="false"/>
+         <composite3d val="false"/>
+         <outputZ val="LEFTMOST"/>
+         <outputZInputPort val="1"/>
+         <applyFocus val="true"/>
+         <multiplier val="1" defaultValue="1"/>
+         <tvgPalette val="compositedPalette"/>
+         <mergeVector val="false"/>
+        </attrs>
+       </module>
+       <module type="PEG" name="REPLACE_WITH--Camera-P" pos="-1121,-582,3" publishUnderTab="REPLACE_WITH--Animatic-P">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+        <attrs>
+         <enable3d val="false"/>
+         <faceCamera val="false"/>
+         <cameraAlignment val="NO_CAMERA_ALIGNMENT"/>
+         <position>
+          <separate val="false"/>
+          <x val="0" defaultValue="0"/>
+          <y val="0" defaultValue="0"/>
+          <z val="0" defaultValue="0"/>
+         </position>
+         <scale>
+          <separate val="true"/>
+          <inFields val="false"/>
+          <xy val="1" defaultValue="1"/>
+          <x val="1" defaultValue="1"/>
+          <y val="1" defaultValue="1"/>
+          <z val="1" defaultValue="1"/>
+         </scale>
+         <rotation>
+          <separate val="false"/>
+          <anglex val="0" defaultValue="0"/>
+          <angley val="0" defaultValue="0"/>
+          <anglez val="0" defaultValue="0"/>
+         </rotation>
+         <angle val="0" defaultValue="0"/>
+         <skew val="0" defaultValue="0"/>
+         <pivot>
+          <x val="0" defaultValue="0"/>
+          <y val="0" defaultValue="0"/>
+          <z val="0" defaultValue="0"/>
+         </pivot>
+         <splineOffset>
+          <x val="0" defaultValue="0"/>
+          <y val="0" defaultValue="0"/>
+          <z val="0" defaultValue="0"/>
+         </splineOffset>
+         <ignoreParentPegScaling val="false"/>
+         <disableFieldRendering val="false"/>
+         <depth val="0"/>
+         <enableMinMaxAngle val="false"/>
+         <minAngle val="-360" defaultValue="-360"/>
+         <maxAngle val="360" defaultValue="360"/>
+         <nailForChildren val="false"/>
+         <ikHoldOrientation val="false"/>
+         <ikHoldX val="false"/>
+         <ikHoldY val="false"/>
+         <ikExcluded val="false"/>
+         <ikCanRotate val="true"/>
+         <ikCanTranslateX val="false"/>
+         <ikCanTranslateY val="false"/>
+         <ikBoneX val="0.20000000000000001" defaultValue="0.20000000000000001"/>
+         <ikBoneY val="0" defaultValue="0"/>
+         <ikStiffness val="1" defaultValue="1"/>
+         <groupAtNetworkBuilding val="false"/>
+         <addCompositeToGroup val="true"/>
+        </attrs>
+       </module>
+      </nodeslist>
+      <linkedlist>
+       <link out="Multi-Port-In" in="REPLACE_WITH--Camera-P"/>
+       <link out="ANIM+ATQ-C" in="ANIM+ATQ-D"/>
+       <link out="BG-C" in="ANIM+BG-C" inport="1"/>
+       <link out="COMPO-C" in="Final-C" inport="0"/>
+       <link out="COMPO-C" in="COMPO-D"/>
+       <link out="ANIM-C" in="ANIM+BG-C" inport="0"/>
+       <link out="ANIM-C" in="ANIM-D"/>
+       <link out="ANIM-C" in="ANIM+ATQ-C" inport="0"/>
+       <link out="ANIM+BG-C" in="ANIM+BG-D"/>
+       <link out="ANIM+BG-C" in="COMPO-C"/>
+       <link out="REPLACE_WITH--Animatic-P" in="REPLACE_WITH--Animatic" inport="0"/>
+       <link out="ATQ-Effects" in="Final-C" inport="1"/>
+       <link out="ATQ-Effects" in="ANIM+ATQ-C" inport="1"/>
+       <link out="REPLACE_WITH--Animatic" in="ATQ-Effects"/>
+       <link out="Final-C" in="REPLACE_WITH--Display"/>
+       <link out="Final-C" in="REPLACE_WITH--Write"/>
+       <link out="REPLACE_WITH--Camera-P" in="REPLACE_WITH--Camera"/>
+       <link out="REPLACE_WITH--Camera-P" in="REPLACE_WITH--Animatic-P"/>
+      </linkedlist>
+      <backdrops>
+       <backdrop topLeft="-687,-624" bottomRight="248,-181">
+        <background color="#0D6B58FF"/>
+        <title text="BG" color="#000000FF" size="12" font="Arial"/>
+        <description text="" color="#000000FF" size="12" font="Arial"/>
+       </backdrop>
+       <backdrop topLeft="310,-626" bottomRight="2306,-196">
+        <background color="#E30FA0FF"/>
+        <title text="ANIM" color="#000000FF" size="12" font="Arial"/>
+        <description text="" color="#000000FF" size="12" font="Arial"/>
+       </backdrop>
+       <backdrop topLeft="92,555" bottomRight="899,807">
+        <background color="#323232FF"/>
+        <title text="Export" color="#000000FF" size="12" font="Arial"/>
+        <description text="" color="#000000FF" size="12" font="Arial"/>
+       </backdrop>
+       <backdrop topLeft="-1315,-381" bottomRight="-737,-142">
+        <background color="#E16B14FF"/>
+        <title text="Animatic" color="#000000FF" size="12" font="Arial"/>
+        <description text="" color="#000000FF" size="12" font="Arial"/>
+       </backdrop>
+       <backdrop topLeft="-1308,-660" bottomRight="-747,-427">
+        <background color="#81C615FF"/>
+        <title text="CAMERA" color="#000000FF" size="12" font="Arial"/>
+        <description text="" color="#000000FF" size="12" font="Arial"/>
+       </backdrop>
+       <backdrop topLeft="-1317,-992" bottomRight="-750,-717">
+        <background color="#323232FF"/>
+        <title text="Scene Infos" color="#000000FF" size="12" font="Arial"/>
+        <description text="" color="#000000FF" size="12" font="Arial"/>
+       </backdrop>
+       <backdrop topLeft="-682,-90" bottomRight="2291,447">
+        <background color="#6C0E9CFF"/>
+        <title text="COMPO" color="#000000FF" size="12" font="Arial"/>
+        <description text="" color="#000000FF" size="12" font="Arial"/>
+       </backdrop>
+      </backdrops>
+     </group>
+    </nodeslist>
+    <linkedlist/>
+   </rootgroup>
+   <unconnectedComposite>
+    <module type="COMPOSITE" name="Unconnected_Composite" pos="0,0,0" publishUnderTab="Unconnected_Composite">
+     <options>
+      <collapsed val="false"/>
+      <version val="1"/>
+     </options>
+     <attrs>
+      <compositeMode val="compositeBitmap"/>
+      <flattenOutput val="true"/>
+      <flattenVector val="false"/>
+      <composite2d val="false"/>
+      <composite3d val="false"/>
+      <outputZ val="LEFTMOST"/>
+      <outputZInputPort val="1"/>
+      <applyFocus val="false"/>
+      <multiplier val="1" defaultValue="1"/>
+      <tvgPalette val="compositedPalette"/>
+      <mergeVector val="false"/>
+     </attrs>
+    </module>
+   </unconnectedComposite>
+   <metas>
+    <meta type="guideList" name="guideList" creator="Harmony Premium" version="1.0">
+     <guideList selectedGuide="-1"/>
+    </meta>
+    <meta type="symmetryGuideList" name="symmetryGuideList" creator="Harmony Premium" version="1.0">
+     <symmetryGuideList selectedGuide="-1"/>
+    </meta>
+    <meta type="alignmentGuideList" name="alignmentGuideList" creator="Harmony Premium" version="1.0">
+     <alignmentGuideList selectedGuide="-1"/>
+    </meta>
+   </metas>
+   <timelineOrderer/>
+  </scene>
+ </scenes>
+ <symbols>
+  <folder name="Symbols">
+   <scene id="0d2c43b885004a2f"/>
+  </folder>
+ </symbols>
+ <timeline>
+  <scene id="0d2c43b885004a2f"/>
+ </timeline>
+ <metas>
+  <meta type="checksumValidation" name="checksumValidation" creator="Harmony Premium" version="1.0">
+   <value data="6B000000000000000303BDAA5578B1B1F5D01F15BFDB18989BD6C630EA332026F28E0C3A6A58F82C275FC867716BBACD919DFD49EEEA1E4641D703429253167A47C6CA207A815552ED5549EDD4609299A4FA46FADDAC084ED7E057FFDBBCDF76C7D12B28B777250933C0A81D43A163DADFA42A6B0200002D2D2D2D2D424547494E2043455254494649434154452D2D2D2D2D0A4D4949426E444343415157674177494241674943424E49774451594A4B6F5A496876634E4151454642514177506A454C4D416B474131554542684D43513045780A447A414E42674E5642416754426C46315A574A6C597A45654D4277474131554541784D5662476C6A5A57357A5A58497564473976626D4A7662323075593239740A4D423458445449324D4451794E7A41354E54637A4E466F5844544D324D4451794E5441354E54637A4E466F774C54454C4D416B474131554542684D43513045780A486A416342674E5642414D4D46564E47587A41774D576F774D4441774D4442775A306848513046424D6A42634D413047435371475349623344514542415155410A413073414D456743515144526A754E4748394556516F4359646478774733514A796B674F765A36394C5548616147422B6E5452346364796C59324C386A6A79300A6878644B767867307463784B464A554862744B476B7A622F6B612F6E6D64767641674D42414145774451594A4B6F5A496876634E4151454642514144675945410A434B6155656841564A685162763439477143683539555052517030754E7853476A33314358796A5845637347796963564F616647466D7845784E6237776551660A535254336674397045393643614A326F495748562F6D37714E4F6D6B4F4D34677A307231487453585478522F656D6F6F2F6D5349515474664E5861442F78724E0A44694B4D564F784B4D7458706D487755334158704A6E3579392B6C352B696A596F4E6B38354734735536553D0A2D2D2D2D2D454E442043455254494649434154452D2D2D2D2D0A400000003F07CF5FB16AA7DF261D08F66A3F7BCD026A1075D6BA27A6D179DBE90B75354AD98ED6A6A7244C6FC17FE1EB3C814AE41CDFF3B8EFF2475CA5CE4DEC47336EF5"/>
+  </meta>
+ </metas>
+</project>

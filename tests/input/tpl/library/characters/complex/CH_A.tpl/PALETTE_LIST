@@ -1,0 +1,4 @@
+ToonBoomAnimationInc PaletteList 1
+palette-library/camera_normal LINK "D:/1_TRAVAIL/WIP/MIYU/dev/repos/HarmonyAdapter/tests/input/xstage/camera_pan/palette-library/camera_normal.plt"
+palette-library/CH_COMPLEX LINK "D:/1_TRAVAIL/WIP/MIYU/dev/repos/HarmonyAdapter/tests/input/tpl/library/characters/complex/CH_A.tpl/palette-library/CH_COMPLEX.plt"
+palette-library/ALL LINK "D:/1_TRAVAIL/WIP/MIYU/dev/repos/HarmonyAdapter/tests/input/tpl/library/characters/complex/CH_A.tpl/palette-library/ALL.plt"

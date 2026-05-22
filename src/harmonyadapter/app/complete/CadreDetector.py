@@ -1,70 +1,121 @@
-from app.model.Cadre import Cadre
-from app.integrations.psdreader.PSDReaderConnector import PSDReaderConnector
+from ..model.Cadre import Cadre,CadreFactory
+from ..model.PSDDocument import PSDDocument
+import re
+from typing import List
 
+
+STUDIO_CONVENTIONS= {
+    "shot_patterns": [
+        r"^SH\d+",
+        r"^SH\d+",
+        r"^SHOT_\d+",
+        r".*_SH\d+",
+        r"^SQ\d+_SH\d+"
+    ]
+}
 
 class CadreDetector():
     
-    def parse_cadres(self,psd_path)->list[Cadre]:
-        # use pipeline module psdreader 
-        return PSDReaderConnector().parse_cadres(psd_path)
-        ...
+    def __init__(self):
+        self._shot_regex = [
+            re.compile(p, re.IGNORECASE)
+            for p in STUDIO_CONVENTIONS["shot_patterns"]
+        ]
+    
+    def parse_cadres(self, psd_path: str) -> list[Cadre]:
+        psd = PSDDocument(psd_path).parse()        
+        cadres = []
+        cadres += self._parse_with_layers_names(psd)
+        cadres += self._parse_with_group_hierarchy(psd)
+        return self._deduplicate(cadres)
+    
+    def _parse_with_layers_names(self,psd:PSDDocument)->list[Cadre]:
+        cadres = []
+        for layer in psd:
+            if layer.is_group():
+                continue
+            shot_name = self._match_shot(layer.name)
+            if not shot_name:
+                continue
 
-    # wip : alternative parsing cadres with PSDtools
+            cadres.append(CadreFactory().from_psd_layer(psd, shot_name, layer))
+        return cadres    
     
-    '''
+    def _parse_with_group_hierarchy(self, psd: PSDDocument) -> List[Cadre]:
+        """
+        Parse cadres using PSD hierarchy instead of flat layer names.
+
+        Expected pattern:
+            .../<shot_id>/Camera
+        """
+
+        cadres = []
+
+        for layer in psd:
+
+            # skip groups
+            if layer.type == "group":
+                continue
+
+            parts = layer.layer_path.split("/")
+            
+            print(parts)
+
+            # must have at least: <shot_id>/Camera
+            if len(parts) < 2:
+                continue
+
+            shot_name = parts[-2]
+            leaf_name = parts[-1]
+
+            # only accept Camera nodes
+            if leaf_name.lower() != "camera":
+                continue
+
+            # optional strict validation (same style as your flat parser)
+            if not self._match_short_shot(shot_name):
+                continue
+
+            cadres.append(CadreFactory().from_psd_layer(psd, shot_name, layer))
+
+        return cadres
+
     
-    def _get_psd_layers_info(psd_path):
+    def _match_shot(self, name: str) -> str | None:
+        for regex in self._shot_regex:
+            m = regex.match(name)
+            if m:
+                return m.group(0)  # return matched shot string
+        return None    
+    
+
+    def _match_short_shot(self, name: str) -> str | None:
         """
-        Retourne un dictionnaire label -> info (scene, x, y) depuis psd-tools.
-        Prend en compte les offsets des groupes parents.
+        Match strict shot group names like:
+            200, 012, 152
         """
-        try:
-            psd = PSDImage.open(psd_path)
-            layers_info = {}
-            scene = 0
+
+        m = re.fullmatch(r"\d{3,4}", name)
+
+        if m:
+            return m.group(0)
+
+        return None
+    
+        
+    def _deduplicate(self, cadres:list[Cadre])->list[Cadre]:
+        seen = set()
+        result = []
+
+        for c in cadres:
+            key = (c.shot, c.frame.x, c.frame.y)
+
+            if key in seen:
+                continue
+
+            seen.add(key)
+            result.append(c)
+
+        return result
             
-            def process_layer(layer, parent_offset=(0, 0), parent_path=""):
-                nonlocal scene
-                
-                # Calculer le chemin complet du layer
-                if parent_path:
-                    full_name = f"{parent_path}/{layer.name}"
-                else:
-                    full_name = layer.name
-                
-                # Calculer les coordonnées absolues
-                abs_x = layer.left + parent_offset[0]
-                abs_y = layer.top + parent_offset[1]
-                
-                # Stocker les infos du layer
-                layers_info[full_name] = {
-                    "scene": scene,
-                    "x": abs_x,
-                    "y": abs_y,
-                    "width": layer.width,
-                    "height": layer.height,
-                }
-                
-                print(f"Layer détecté: {full_name} - scene={scene}, pos=({abs_x}, {abs_y}), size=({layer.width}x{layer.height})")
-                
-                scene += 1
-                
-                # Si c'est un groupe, traiter les enfants récursivement
-                if hasattr(layer, '__iter__'):
-                    for child in layer:
-                        process_layer(child, parent_offset=(abs_x, abs_y), parent_path=full_name)
-            
-            # Parcourir tous les layers de la racine
-            for layer in psd:
-                process_layer(layer)
-            
-            print(f"\nTotal layers récupérés: {len(layers_info)}")
-            return layers_info
-            
-        except Exception as e:
-            print(f"Erreur lors de la récupération des infos layers avec psd-tools: {e}")
-            import traceback
-            traceback.print_exc()
-            return {}
-            
-    '''
+

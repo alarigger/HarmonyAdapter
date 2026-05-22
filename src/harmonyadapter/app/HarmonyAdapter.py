@@ -1,8 +1,10 @@
 from typing import List,Dict,Callable
 import json
-from app.HarmonyAdapterRequest import HarmonyAdapterRequest
-from app.strategies.preview.PreviewStrategyFactory import PreviewStrategyFactory
-from app.strategies.scenebuild.SceneBuildStrategyFactory import SceneBuildStrategyFactory
+from .HarmonyAdapterRequest import HarmonyAdapterRequest
+from .HarmonyAdapterRequestCompleter import HarmonyAdapterRequestCompleter
+from .HarmonyAdapterRequestValidator import HarmonyAdapterRequestValidator
+from .strategies.preview.PreviewStrategyFactory import PreviewStrategyFactory
+from .strategies.scenebuild.SceneBuildStrategyFactory import SceneBuildStrategyFactory
 import copy
 import os 
 
@@ -33,8 +35,11 @@ class HarmonyAdapter():
         ...
         
     def complete_request(self,request:HarmonyAdapterRequest)->HarmonyAdapterRequest:
-        completed_request = copy.deepcopy(request)
-        return completed_request
+        completed_request = HarmonyAdapterRequestCompleter().complete(request)
+        return completed_request    
+    
+    def validate_request(self,request:HarmonyAdapterRequest)->bool:
+        return HarmonyAdapterRequestValidator().validate(request)
 
     def treat(self,request:HarmonyAdapterRequest)->HarmonyAdapterRepport:
         '''
@@ -58,6 +63,8 @@ class HarmonyAdapter():
             return func
         return decorator
     
+
+    
     
 
 
@@ -69,7 +76,7 @@ class HarmonyAdapter():
 
 '''
 @HarmonyAdapter._register_handler("preview_shot")
-def preview_shot(self:HarmonyAdapter,request:HarmonyAdapterRequest)->HarmonyAdapterRepport:
+def preview_shot_handler(self:HarmonyAdapter,request:HarmonyAdapterRequest)->HarmonyAdapterRepport:
     '''
         position the background image in front of the shot camera and render the video  
     '''
@@ -84,15 +91,31 @@ def preview_shot(self:HarmonyAdapter,request:HarmonyAdapterRequest)->HarmonyAdap
     ...
     
 @HarmonyAdapter._register_handler("build_scene")
-def preview_shot(self:HarmonyAdapter,request:HarmonyAdapterRequest)->HarmonyAdapterRepport:
+def build_scene_handler(self:HarmonyAdapter,request:HarmonyAdapterRequest)->HarmonyAdapterRepport:
     '''
-        build scene for animation 
+        build scene for animators to start working
     '''
     report = HarmonyAdapterRepport()
     factory = SceneBuildStrategyFactory()
-
     strategy = factory.get_strategy(request.get_software())
-    new_scene = strategy.build_scene(request)
+    
+    # validation layer
+    errors = self.validate_request(request)
+    if len(errors) >0:
+        print(errors)
+        return report
+    
+    print("--REQUEST VALIDATED--")
+    
+    # enrichement layer
+    completed_request = self.complete_request(request)
+
+    print("--REQUEST COMPLETED--")
+    
+    # execution layer
+    new_scene = strategy.build_scene(completed_request)
+
+    print("--REQUEST EXECUTED--")
     
     return report
 

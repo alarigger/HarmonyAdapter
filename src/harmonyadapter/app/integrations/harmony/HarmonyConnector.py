@@ -45,6 +45,37 @@ class HarmonyConnector(Connector):
         print(f"[HarmonyConnector] Running: {cmd}")
         os.system(cmd)
 
+    def run_script_ui(self, scene_path: str, script_name: str, args: dict | None = None):
+        """Run a named Harmony JS script WITHOUT the -batch flag.
+
+        All scripting APIs are available (no batch-mode restrictions):
+          - node.add("READ") creates a proper READ module, not a PLACEHOLDER.
+          - column.setEntry() works without ACCESS_VIOLATION.
+
+        The script MUST call ``scene.saveAll()`` and ``System.exit(0)`` at the
+        end, or Harmony will stay open after the script completes.
+        """
+        script   = self.script(script_name)
+        launcher = self.script("launcher_noBatch", ext="bat")
+
+        script_dir = Path(script.path).parent
+        app_root   = Path(script.path).parents[6]
+
+        os.environ["HARMONY_WRAPPER_SCRIPT_FOLDER"] = str(script_dir)
+        os.environ["APP_LIB_FOLDER"]                = str(app_root / "lib")
+        os.environ["APP_TEST_FOLDER"]               = str(app_root / "tests")
+        os.environ["HARMONY_WRAPPER_ARGS"]          = self._serialise_args(args or {})
+
+        cmd = " ".join([
+            self._quote(launcher.path),
+            self._quote(self._main_path),
+            self._quote(scene_path),
+            self._quote(script.path),
+        ])
+
+        print(f"[HarmonyConnector] Running (UI mode): {cmd}")
+        os.system(cmd)
+
     # -------------------------
     # Rendering
     # -------------------------
