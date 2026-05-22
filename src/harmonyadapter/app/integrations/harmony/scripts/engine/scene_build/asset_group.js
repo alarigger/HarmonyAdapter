@@ -283,7 +283,16 @@ function AssetGroup(group,asset,asset_file){
     this.add_backdrop = function(color){
         var color = color || new $.oColorValue("#336600ff")
         MessageLog.trace(this.get_outside_nodes())
-        var backdrop =this.group.parent.addBackdropToNodes(this.get_outside_nodes(), this.get_asset_name(), "",color)
+        var backdrop =this.group.parent.addBackdropToNodes(
+            this.get_outside_nodes(),
+             this.get_asset_name(),
+             "",
+             color,
+             0,
+             0,
+             40,
+             40
+        )
         this.backdrop = backdrop
         return this
     }
@@ -357,7 +366,7 @@ function AssetGroupLine(){
 
 function AssetGroupPlacer(){
     this._line_table = {}
-    this._spacing_x = 200
+    this._spacing_x = 250
     this._spacing_y = 150
 
     this._get_next_x = function(line_name){

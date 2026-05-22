@@ -168,7 +168,7 @@ function _import_strategy_tpl_in_wrapper_group(asset_group) {
         //if there is a rig group we connect all its outputs
         const rig_group = rig_manager.find_rig_group(nodes)
         if(rig_group){
-            // have we connected this node before ?
+            // have we connected this group before ?
             if(rig_group.path != rig_head.path && rig_group.path != rig_foot.path ){
                 node_manager.link_out_all_ports(rig_group,asset_group.group.multiportOut)
             }
@@ -192,12 +192,11 @@ import_strategy_register.add("TPL", _import_strategy_tpl_in_wrapper_group)
  * @returns {AssetGroup}
  */
 function _import_strategy_psd(asset_group) {
-
     const path = asset_group.get_path()
-    var group = asset_group.group
-
+    var nodes = asset_group.group.importPSD(path, true, true, true, true)
+    asset_group.group.multiportIn.centerAbove(nodes)
+    asset_group.group.multiportOut.centerBelow(nodes)
     return asset_group
-    return group.importPSD(path, true, true, true, true)
 }
 import_strategy_register.add("PSD", _import_strategy_psd)
 
@@ -218,6 +217,10 @@ function _import_strategy_proxy_image(asset_group) {
     var image_node = group.importImage(image_path)
     image_node.linkOutNode(group.multiportOut);
     group.multiportIn.linkOutNode(image_node);
+
+    var nodes = [image_node]
+    asset_group.group.multiportIn.centerAbove(nodes)
+    asset_group.group.multiportOut.centerBelow(nodes)
     return asset_group
 }
 import_strategy_register.add("use_proxy_image", _import_strategy_proxy_image)
