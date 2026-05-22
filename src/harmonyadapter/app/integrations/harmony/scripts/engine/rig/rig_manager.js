@@ -101,14 +101,12 @@ function RigManager() {
         if(group.outPorts == 0){
             return false
         }
-        if(group.name.length < 5){
-            return false
-        }
         return true
     }
 
     this.is_wrapped_rig = function(node_list){
-        nodes = []
+        // tal
+        var groups = []
 
         for (var i = 0; i < node_list.length; i++) {
             var curr = node_list[i]
@@ -122,8 +120,13 @@ function RigManager() {
             if(node.type(curr.path)!="GROUP"){
                 return false
             }
+            groups.push(curr)
         }       
-        return nodes.length==1 
+        // only one group
+        if(groups.length>1){
+            return false
+        }
+        return true
     }
 
 
