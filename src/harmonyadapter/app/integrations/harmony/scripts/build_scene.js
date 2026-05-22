@@ -15,6 +15,7 @@ MessageLog.trace("----------------------------------------------------------")
 
 include(script_folder+"/engine/parse_args.js")
 include(script_folder+"/engine/rig/node_manager.js")
+include(script_folder+"/engine/rig/rig_manager.js")
 include(script_folder+"/engine/scene_build/scene_template.js")
 include(script_folder+"/engine/scene_build/asset_group.js")
 include(script_folder+"/engine/scene_build/asset_import_strategies.js")

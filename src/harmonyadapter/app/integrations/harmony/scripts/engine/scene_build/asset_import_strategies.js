@@ -115,6 +115,7 @@ function _import_strategy_tpl_replace_wrapper(asset_group) {
 function _import_strategy_tpl_in_wrapper_group(asset_group) {
 
     var node_manager = new NodeManager()
+    var rig_manager = new RigManager()
     const path = asset_group.get_path()
 
     var nodes = asset_group.group.importTemplate(path);
@@ -134,27 +135,48 @@ function _import_strategy_tpl_in_wrapper_group(asset_group) {
         MessageLog.trace("[TPL] ERROR Empty import result: " + path);
         return null;
     }
-    var firstNode = nodes[0];
-    MessageLog.trace("[TPL] first node type: " + node.type(firstNode.path) + " path: " + firstNode.path);
 
-    // connect the first node to the wrapper group multiports 
-    asset_group.group.multiportIn.linkOutNode(firstNode)
-    firstNode.linkOutNode(asset_group.group.multiportOut)
-
-    if (node.type(firstNode.path) == "GROUP") {
-
+    if(rig_manager.is_wrapped_rig(nodes)){
+        MessageLog.trace("[TPL] Nice Wrapped rig ");
+        const rig_group = rig_manager.find_rig_group(nodes)
+        if (!rig_group){
+            return asset_group
+        }
         // the tpl is inside a group , as recommanded for smooth importation
-        firstNode.linkOutNode(asset_group.group.multiportOut)
-
+        asset_group.group.multiportIn.linkOutNode(rig_group)
+        node_manager.link_out_all_ports(rig_group,asset_group.group.multiportOut)
+        
         // TODO : linkout ALL group output
-
+        
         // we ungroup it with the explode func that recreate the connections 
-        nodes = node_manager.ungroup(firstNode)
+        nodes = node_manager.ungroup(rig_group)
     }else{
+        
+        MessageLog.trace("[TPL] Raw nodes ");
         // case the tpl content is raw nodes .. 
-        var lastNode = nodes[nodes.length-1] // wild guess .. todo detect lowest image node 
-        lastNode.linkOutNode(asset_group.group.multiportOut)
+        // connect the nodes to the wrapper group multiports based on their Y position
+        const rig_head = rig_manager.find_head_node(nodes);
+        const rig_foot = rig_manager.find_foot_node(nodes) || rig_head;
+
+        if(!rig_foot){
+            return asset_group
+        }
+
+        asset_group.group.multiportIn.linkOutNode(rig_head)
+        node_manager.link_out_all_ports(rig_foot,asset_group.group.multiportOut)
+
+        //if there is a rig group we connect all its outputs
+        const rig_group = rig_manager.find_rig_group(nodes)
+        if(rig_group){
+            // have we connected this node before ?
+            if(rig_group.path != rig_head.path && rig_group.path != rig_foot.path ){
+                node_manager.link_out_all_ports(rig_group,asset_group.group.multiportOut)
+            }
+        }
     }
+    
+    asset_group.group.multiportIn.centerAbove(nodes)
+    asset_group.group.multiportOut.centerBelow(nodes)
 
     return asset_group
 }

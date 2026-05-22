@@ -214,4 +214,27 @@ function NodeManager() {
         return result_nodes;
     };
 
+    /**
+     * 
+     * @param {$.oNode} src_node 
+     * @param {$.oNode} dst_node 
+     */
+    this.link_out_all_ports = function(src_node,dst_node){
+        for(var o = src_node.outPorts ; o  >= 0 ; o--){
+            src_node.linkOutNode(dst_node,o,0,true)
+        }
+    }    
+
+    /**
+     * 
+     * @param {$.oNode} src_node 
+     * @param {$.oNode} dst_node 
+     */
+    this.link_in_all_ports = function(src_node,dst_node){
+        for(var o = src_node.inPorts ; o  >= 0 ; o--){
+            src_node.linkInNode(dst_node,o,0,true)
+        }
+    }
+
+
 }

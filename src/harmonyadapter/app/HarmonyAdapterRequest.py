@@ -1,10 +1,10 @@
-from .model.BG import BG,BGFactory
-from .model.Cadre import Cadre,CadreFactory
-from .model.Shot import Shot,ShotNameParser
-from .model.Render import Render
-from .model.Build import Build
-from .model.Camera import Camera
-from .model.Software import Software
+from app.model.BG import BG,BGFactory
+from app.model.Cadre import Cadre,CadreFactory
+from app.model.Shot import Shot,ShotNameParser
+from app.model.Render import Render
+from app.model.Build import Build
+from app.model.Camera import Camera
+from app.model.Software import Software
 from typing import Optional
 from dataclasses import dataclass, field
 from typing import Optional
@@ -284,19 +284,25 @@ class HarmonyAdapterRequestFactory():
 
         
         
-    def parse_from_module_func(self,name: str,bg_path: str,**kwargs) -> HarmonyAdapterRequest:
+    def parse_from_module_func(self, name: str, **kwargs):
 
-        # Build BG object first (if relevant to your design)
-        bg = BG(path=bg_path) if bg_path else None
+        # Build a CLI-like object
+        cli_args = type("Args", (), {})()
 
-        # Build base argument dictionary
-        data = {
-            "name": name,
-            "bg": bg,
-        }
+        cli_args.request_name = name
+        cli_args.shot_file = kwargs.get("shot_file")
+        cli_args.shot_name = kwargs.get("shot_name")
+        cli_args.camera = kwargs.get("camera")
 
-        # Merge extra allowed fields
-        data.update(kwargs)
+        cli_args.output_type = kwargs.get("output_type")
+        cli_args.output_path = kwargs.get("output_path")
 
-        # Single immutable construction
-        return HarmonyAdapterRequest(**data)
+        cli_args.cadre = kwargs.get("cadre")
+
+        cli_args.json_path = kwargs.get("json_path")
+        cli_args.json_input_path = kwargs.get("json_input_path")
+
+        cli_args.scene_path = kwargs.get("scene_path")
+
+        # IMPORTANT: reuse CLI parser
+        return self.parse_from_cli(cli_args)

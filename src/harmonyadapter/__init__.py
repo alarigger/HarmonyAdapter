@@ -17,15 +17,6 @@
 # Pour l'instant, le Scene Builder utilise un flux simplifié JPG (import flat)
 # qui est la première étape du scene build. Le flux PSD viendra ensuite.
 
-from .main import HarmonyAdapter, preview_shot
-from .app.HarmonyAdapterRequest import HarmonyAdapterRequest, HarmonyAdapterRequestFactory
-# "extract_cadres",
-# "get_shot_cadre",
-# "convert_to_json",
-
-__all__ = [
-    "HarmonyAdapter",
-    "HarmonyAdapterRequest",
-    "HarmonyAdapterRequestFactory",
-    "preview_shot",
-]
+from .facade import HarmonyAdapterFacade
+harmonyadapter = HarmonyAdapterFacade()
+__all__ = ["harmonyadapter"]
