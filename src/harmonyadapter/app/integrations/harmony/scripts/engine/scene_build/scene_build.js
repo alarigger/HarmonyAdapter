@@ -207,7 +207,7 @@ function SceneBuilDataFactory(){
         var file = new $.oFile(json_path);
         
         if (!file.exists) {
-            MessageBox.warning("[SceneBuild] JSON file not found: " + json_path);
+            MessageLog.debug("[SceneBuild] JSON file not found: " + json_path);
             return null;
         }
 
@@ -217,7 +217,7 @@ function SceneBuilDataFactory(){
         try {
             scene_build_description = JSON.parse(content);
         } catch (e) {
-            MessageBox.warning("[SceneBuild] Invalid JSON:\n" + e);
+            MessageLog.debug("[SceneBuild] Invalid JSON:\n" + e);
             return null;
         }
 

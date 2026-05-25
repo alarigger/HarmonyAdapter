@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project  source="Harmony Premium (HarmonyPremium.exe) version 25.1.0 build 24630 2025-12-02 22:03:23" version="2510" build="24630" date="Mon May 18 00:54:43 2026" timeMsec="1779058483665" username="Canard" realUsername="Canard" creator="harmony">
+<project  source="Harmony Premium (HarmonyPremium.exe) version 25.1.0 build 24630 2025-12-02 22:03:23" version="2510" build="24630" date="Sat May 23 17:07:08 2026" timeMsec="1779548828842" username="Canard" realUsername="Canard" creator="harmony">
  <elements>
   <element id="1" elementName="REPLACE_WITH--Animatic" elementFolder="REPLACE_WITH--Animatic" pixmapFormat="2" scanType="2" fieldChart="12" vectorType="2" rootFolder="elements"/>
  </elements>
@@ -42,53 +42,32 @@
       </options>
       <attrs/>
       <nodeslist>
-       <module type="MULTIPORT_IN" name="Multi-Port-In" pos="11,-682,2">
+       <module type="MULTIPORT_IN" name="Multi-Port-In" pos="650,-1143,6">
         <options>
          <collapsed val="false"/>
          <version val="1"/>
         </options>
-        <ports>
-         <port type="PEG" idx="0"/>
-        </ports>
+        <ports/>
        </module>
-       <module type="DISPLAY" name="ANIM-D" pos="981,-157,12" publishUnderTab="Display_1">
-        <options>
-         <collapsed val="false"/>
-         <version val="1"/>
-        </options>
-       </module>
-       <module type="DISPLAY" name="ANIM+BG-D" pos="375,11,10" publishUnderTab="Animation-D">
+       <module type="DISPLAY" name="ANIM-D" pos="981,-157,14" publishUnderTab="Display_1">
         <options>
          <collapsed val="false"/>
          <version val="1"/>
         </options>
        </module>
-       <module type="DISPLAY" name="ANIM+ATQ-D" pos="945,-10,13" publishUnderTab="Animation-D">
+       <module type="DISPLAY" name="ANIM+BG-D" pos="375,11,12" publishUnderTab="Animation-D">
         <options>
          <collapsed val="false"/>
          <version val="1"/>
         </options>
        </module>
-       <module type="COMPOSITE" name="ANIM+ATQ-C" pos="914,-53,8" publishUnderTab="Animation-C">
+       <module type="DISPLAY" name="ANIM+ATQ-D" pos="945,-10,15" publishUnderTab="Animation-D">
         <options>
          <collapsed val="false"/>
          <version val="1"/>
         </options>
-        <attrs>
-         <compositeMode val="compositePassthrough"/>
-         <flattenOutput val="false"/>
-         <flattenVector val="false"/>
-         <composite2d val="false"/>
-         <composite3d val="false"/>
-         <outputZ val="LEFTMOST"/>
-         <outputZInputPort val="1"/>
-         <applyFocus val="true"/>
-         <multiplier val="1" defaultValue="1"/>
-         <tvgPalette val="compositedPalette"/>
-         <mergeVector val="false"/>
-        </attrs>
        </module>
-       <module type="COMPOSITE" name="BG-C" pos="-258,-209,19" publishUnderTab="Composite">
+       <module type="COMPOSITE" name="ANIM+ATQ-C" pos="914,-53,11" publishUnderTab="Animation-C">
         <options>
          <collapsed val="false"/>
          <version val="1"/>
@@ -107,7 +86,7 @@
          <mergeVector val="false"/>
         </attrs>
        </module>
-       <module type="COMPOSITE" name="COMPO-C" pos="345,418,14" publishUnderTab="Animation+Background-C">
+       <module type="COMPOSITE" name="BG-C" pos="-258,-209,20" publishUnderTab="Composite">
         <options>
          <collapsed val="false"/>
          <version val="1"/>
@@ -126,7 +105,7 @@
          <mergeVector val="false"/>
         </attrs>
        </module>
-       <module type="COMPOSITE" name="ANIM-C" pos="966,-211,17" publishUnderTab="Composite">
+       <module type="COMPOSITE" name="COMPO-C" pos="345,418,16" publishUnderTab="Animation+Background-C">
         <options>
          <collapsed val="false"/>
          <version val="1"/>
@@ -145,7 +124,7 @@
          <mergeVector val="false"/>
         </attrs>
        </module>
-       <module type="COMPOSITE" name="ANIM+BG-C" pos="341,-27,15" publishUnderTab="Composite_1">
+       <module type="COMPOSITE" name="ANIM-C" pos="966,-211,18" publishUnderTab="Composite">
         <options>
          <collapsed val="false"/>
          <version val="1"/>
@@ -164,7 +143,26 @@
          <mergeVector val="false"/>
         </attrs>
        </module>
-       <module type="WRITE" name="REPLACE_WITH--Write" pos="207,715,18" publishUnderTab="Write">
+       <module type="COMPOSITE" name="ANIM+BG-C" pos="341,-27,17" publishUnderTab="Composite_1">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+        <attrs>
+         <compositeMode val="compositePassthrough"/>
+         <flattenOutput val="false"/>
+         <flattenVector val="false"/>
+         <composite2d val="false"/>
+         <composite3d val="false"/>
+         <outputZ val="LEFTMOST"/>
+         <outputZInputPort val="1"/>
+         <applyFocus val="true"/>
+         <multiplier val="1" defaultValue="1"/>
+         <tvgPalette val="compositedPalette"/>
+         <mergeVector val="false"/>
+        </attrs>
+       </module>
+       <module type="WRITE" name="REPLACE_WITH--Write" pos="207,715,19" publishUnderTab="Write">
         <options>
          <collapsed val="false"/>
          <version val="1"/>
@@ -187,23 +185,27 @@
           <filterResY val="540"/>
          </enabling>
          <scriptMovie val="false"/>
-         <scriptEditor val="// Following code will be called at the end of Write Node rendering
+         <scriptEditor>
+          <val>
+           <![CDATA[// Following code will be called at the end of Write Node rendering
 // operations to create a movie file from rendered images.
 
-// ..."/>
+// ...]]>
+          </val>
+         </scriptEditor>
          <colorSpace val=""/>
          <compositePartitioning val="NoCompositePartitioning"/>
          <zPartitionRange val="1" defaultValue="1"/>
          <cleanUpPartitionFolders val="true"/>
         </attrs>
        </module>
-       <module type="DISPLAY" name="REPLACE_WITH--Display" pos="393,715,1" publishUnderTab="Display">
+       <module type="DISPLAY" name="REPLACE_WITH--Display" pos="393,715,8" publishUnderTab="Display">
         <options>
          <collapsed val="false"/>
          <version val="1"/>
         </options>
        </module>
-       <module type="PEG" name="REPLACE_WITH--Animatic-P" pos="-1125,-309,7" publishUnderTab="REPLACE_WITH--Animatic-P">
+       <module type="PEG" name="Animatic-P" pos="-1080,-330,4" publishUnderTab="REPLACE_WITH--Animatic-P">
         <options>
          <collapsed val="false"/>
          <version val="1"/>
@@ -265,7 +267,7 @@
          <addCompositeToGroup val="true"/>
         </attrs>
        </module>
-       <group name="ATQ-Effects" pos="-1098,-213,5">
+       <group name="ATQ-Effects" pos="-1098,-213,10">
         <options>
          <collapsed val="false"/>
          <subnodeCollapsed val="true"/>
@@ -306,7 +308,7 @@
          <link out="ATQ-Transparency" in="Multi-Port-Out"/>
         </linkedlist>
        </group>
-       <module type="READ" name="REPLACE_WITH--Animatic" pos="-1139,-267,6" publishUnderTab="Drawing">
+       <module type="READ" name="REPLACE_WITH--Animatic" pos="-1138,-293,3" publishUnderTab="Drawing">
         <options>
          <collapsed val="false"/>
          <version val="1"/>
@@ -420,13 +422,13 @@
          <useFileUnits val="true"/>
         </attrs>
        </module>
-       <module type="DISPLAY" name="COMPO-D" pos="370,455,11" publishUnderTab="Animation+Animatic-D">
+       <module type="DISPLAY" name="COMPO-D" pos="370,455,13" publishUnderTab="Animation+Animatic-D">
         <options>
          <collapsed val="false"/>
          <version val="1"/>
         </options>
        </module>
-       <module type="CAMERA" name="REPLACE_WITH--Camera" pos="-1258,-486,9" publishUnderTab="Camera">
+       <module type="CAMERA" name="REPLACE_WITH--Camera" pos="-1236,-491,7" publishUnderTab="Camera">
         <options>
          <collapsed val="false"/>
          <version val="1"/>
@@ -448,7 +450,7 @@
          <farPlane val="1000" defaultValue="1000"/>
         </attrs>
        </module>
-       <module type="COMPOSITE" name="Final-C" pos="343,640,16" publishUnderTab="Composite">
+       <module type="COMPOSITE" name="Final-C" pos="343,640,5" publishUnderTab="Composite">
         <options>
          <collapsed val="false"/>
          <version val="1"/>
@@ -467,7 +469,7 @@
          <mergeVector val="false"/>
         </attrs>
        </module>
-       <module type="PEG" name="REPLACE_WITH--Camera-P" pos="-1121,-582,3" publishUnderTab="REPLACE_WITH--Animatic-P">
+       <module type="PEG" name="REPLACE_WITH--Camera_Peg" pos="-1128,-582,9" publishUnderTab="REPLACE_WITH--Animatic-P">
         <options>
          <collapsed val="false"/>
          <version val="1"/>
@@ -529,9 +531,27 @@
          <addCompositeToGroup val="true"/>
         </attrs>
        </module>
+       <module type="COMPOSITE" name="REPLACE_WITH--Composite" pos="-1129,-254,1" publishUnderTab="Final-C">
+        <options>
+         <collapsed val="false"/>
+         <version val="1"/>
+        </options>
+        <attrs>
+         <compositeMode val="compositeBitmap"/>
+         <flattenOutput val="true"/>
+         <flattenVector val="false"/>
+         <composite2d val="false"/>
+         <composite3d val="false"/>
+         <outputZ val="LEFTMOST"/>
+         <outputZInputPort val="1"/>
+         <applyFocus val="true"/>
+         <multiplier val="1" defaultValue="1"/>
+         <tvgPalette val="compositedPalette"/>
+         <mergeVector val="false"/>
+        </attrs>
+       </module>
       </nodeslist>
       <linkedlist>
-       <link out="Multi-Port-In" in="REPLACE_WITH--Camera-P"/>
        <link out="ANIM+ATQ-C" in="ANIM+ATQ-D"/>
        <link out="BG-C" in="ANIM+BG-C" inport="1"/>
        <link out="COMPO-C" in="Final-C" inport="0"/>
@@ -541,14 +561,15 @@
        <link out="ANIM-C" in="ANIM+ATQ-C" inport="0"/>
        <link out="ANIM+BG-C" in="ANIM+BG-D"/>
        <link out="ANIM+BG-C" in="COMPO-C"/>
-       <link out="REPLACE_WITH--Animatic-P" in="REPLACE_WITH--Animatic" inport="0"/>
+       <link out="Animatic-P" in="REPLACE_WITH--Animatic" inport="0"/>
        <link out="ATQ-Effects" in="Final-C" inport="1"/>
        <link out="ATQ-Effects" in="ANIM+ATQ-C" inport="1"/>
-       <link out="REPLACE_WITH--Animatic" in="ATQ-Effects"/>
+       <link out="REPLACE_WITH--Animatic" in="REPLACE_WITH--Composite"/>
        <link out="Final-C" in="REPLACE_WITH--Display"/>
        <link out="Final-C" in="REPLACE_WITH--Write"/>
-       <link out="REPLACE_WITH--Camera-P" in="REPLACE_WITH--Camera"/>
-       <link out="REPLACE_WITH--Camera-P" in="REPLACE_WITH--Animatic-P"/>
+       <link out="REPLACE_WITH--Camera_Peg" in="REPLACE_WITH--Camera"/>
+       <link out="REPLACE_WITH--Camera_Peg" in="Animatic-P"/>
+       <link out="REPLACE_WITH--Composite" in="ATQ-Effects"/>
       </linkedlist>
       <backdrops>
        <backdrop topLeft="-687,-624" bottomRight="248,-181">
@@ -636,7 +657,7 @@
  </timeline>
  <metas>
   <meta type="checksumValidation" name="checksumValidation" creator="Harmony Premium" version="1.0">
-   <value data="6B000000000000000303BDAA5578B1B1F5D01F15BFDB18989BD6C630EA332026F28E0C3A6A58F82C275FC867716BBACD919DFD49EEEA1E4641D703429253167A47C6CA207A815552ED5549EDD4609299A4FA46FADDAC084ED7E057FFDBBCDF76C7D12B28B777250933C0A81D43A163DADFA42A6B0200002D2D2D2D2D424547494E2043455254494649434154452D2D2D2D2D0A4D4949426E444343415157674177494241674943424E49774451594A4B6F5A496876634E4151454642514177506A454C4D416B474131554542684D43513045780A447A414E42674E5642416754426C46315A574A6C597A45654D4277474131554541784D5662476C6A5A57357A5A58497564473976626D4A7662323075593239740A4D423458445449324D4451794E7A41354E54637A4E466F5844544D324D4451794E5441354E54637A4E466F774C54454C4D416B474131554542684D43513045780A486A416342674E5642414D4D46564E47587A41774D576F774D4441774D4442775A306848513046424D6A42634D413047435371475349623344514542415155410A413073414D456743515144526A754E4748394556516F4359646478774733514A796B674F765A36394C5548616147422B6E5452346364796C59324C386A6A79300A6878644B767867307463784B464A554862744B476B7A622F6B612F6E6D64767641674D42414145774451594A4B6F5A496876634E4151454642514144675945410A434B6155656841564A685162763439477143683539555052517030754E7853476A33314358796A5845637347796963564F616647466D7845784E6237776551660A535254336674397045393643614A326F495748562F6D37714E4F6D6B4F4D34677A307231487453585478522F656D6F6F2F6D5349515474664E5861442F78724E0A44694B4D564F784B4D7458706D487755334158704A6E3579392B6C352B696A596F4E6B38354734735536553D0A2D2D2D2D2D454E442043455254494649434154452D2D2D2D2D0A400000003F07CF5FB16AA7DF261D08F66A3F7BCD026A1075D6BA27A6D179DBE90B75354AD98ED6A6A7244C6FC17FE1EB3C814AE41CDFF3B8EFF2475CA5CE4DEC47336EF5"/>
+   <value data="6B0000000000000003032E39C6EB222266438C862C488B0B084555A379A0B3B5611D9FA9F9CB6BBFB4CC5BF4E2F8295E020E6EDA7D798DD5D24490D101C085E9D45559B3E912C6C17EC6DA7E47F3010A3769D5694E3F9BDD4473C46C482F4CE55442B8BB24E4B69AA0533B8ED032F0494C37B96B0200002D2D2D2D2D424547494E2043455254494649434154452D2D2D2D2D0A4D4949426E444343415157674177494241674943424E49774451594A4B6F5A496876634E4151454642514177506A454C4D416B474131554542684D43513045780A447A414E42674E5642416754426C46315A574A6C597A45654D4277474131554541784D5662476C6A5A57357A5A58497564473976626D4A7662323075593239740A4D423458445449324D4451794E7A41354E54637A4E466F5844544D324D4451794E5441354E54637A4E466F774C54454C4D416B474131554542684D43513045780A486A416342674E5642414D4D46564E47587A41774D576F774D4441774D4442775A306848513046424D6A42634D413047435371475349623344514542415155410A413073414D456743515144526A754E4748394556516F4359646478774733514A796B674F765A36394C5548616147422B6E5452346364796C59324C386A6A79300A6878644B767867307463784B464A554862744B476B7A622F6B612F6E6D64767641674D42414145774451594A4B6F5A496876634E4151454642514144675945410A434B6155656841564A685162763439477143683539555052517030754E7853476A33314358796A5845637347796963564F616647466D7845784E6237776551660A535254336674397045393643614A326F495748562F6D37714E4F6D6B4F4D34677A307231487453585478522F656D6F6F2F6D5349515474664E5861442F78724E0A44694B4D564F784B4D7458706D487755334158704A6E3579392B6C352B696A596F4E6B38354734735536553D0A2D2D2D2D2D454E442043455254494649434154452D2D2D2D2D0A40000000D012CA7B67DB3497C0BD61AE8E3734FDCB994A62715382D4B4FE4C17CDD5007A0DDC63968B074096CCA123B39E8E5C9BB1F44B5CCF585E6F90E3CD31F8A1947A"/>
   </meta>
  </metas>
 </project>

@@ -14,6 +14,7 @@ include(lib_folder+"/js/OpenHarmony-0.11.0/openHarmony.js")
 MessageLog.trace("----------------------------------------------------------")
 
 include(script_folder+"/engine/parse_args.js")
+include(script_folder+"/engine/rig/image_handler.js")
 include(script_folder+"/engine/rig/node_manager.js")
 include(script_folder+"/engine/rig/rig_manager.js")
 include(script_folder+"/engine/scene_build/scene_template.js")

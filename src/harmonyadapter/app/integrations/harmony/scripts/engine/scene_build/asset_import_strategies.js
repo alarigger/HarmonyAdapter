@@ -18,18 +18,62 @@ function ImportStrategiesRegister() {
     this.add = function (name, func) {
         this._table[name] = func
     }
+
     /**
      * 
      * @param {AssetGroup} asset_group 
      * @returns {$.oNode[]}
      */
     this.apply = function (asset_group) {
-        const strategy_name = asset_group.get_import_strategy() ||  asset_group.get_file_type()
+
+        const strategy_name =
+            asset_group.get_import_strategy() ||
+            asset_group.get_file_type()
+
         if (!this._table[strategy_name]) {
-            MessageLog.trace("Import Strategy not found: " + strategy_name)
+            MessageLog.trace(
+                "[Importation] Error Import Strategy not found: " + strategy_name
+            )
             return asset_group
         }
-        return this._table[strategy_name](asset_group)
+
+        var last_error = null
+
+        // try twice
+        for (var attempt = 1; attempt <= 1; attempt++) {
+
+            try {
+
+                MessageLog.trace(
+                    "[Importation] Applying import strategy: " +
+                    strategy_name +
+                    " (attempt " + attempt + ")"
+                )
+
+                return this._table[strategy_name](asset_group)
+
+            } catch (err) {
+
+                last_error = err
+
+                MessageLog.trace(
+                    "[Importation] Error applying import strategy '" +
+                    strategy_name +
+                    "' on attempt " +
+                    attempt +
+                    ": " +
+                    err
+                )
+            }
+        }
+
+        // failed after 2 attempts
+        MessageLog.trace(
+            "[Importation] Import strategy failed after 2 attempts: " +
+            strategy_name
+        )
+
+        throw last_error
     }
 }
 var import_strategy_register = new ImportStrategiesRegister()
@@ -192,11 +236,12 @@ import_strategy_register.add("TPL", _import_strategy_tpl_in_wrapper_group)
  * @returns {AssetGroup}
  */
 function _import_strategy_psd(asset_group) {
+    return asset_group
     const path = asset_group.get_path()
     var nodes = asset_group.group.importPSD(path, true, true, true, true)
     asset_group.group.multiportIn.centerAbove(nodes)
     asset_group.group.multiportOut.centerBelow(nodes)
-    return asset_group
+
 }
 import_strategy_register.add("PSD", _import_strategy_psd)
 
@@ -207,17 +252,29 @@ import_strategy_register.add("PSD", _import_strategy_psd)
  */
 function _import_strategy_proxy_image(asset_group) {
 
+    
     const image_path = asset_group.get_proxy_image_path()
-    var group = asset_group.group
     if(!image_path){
         MessageLog.trace("[use_proxy_image] ERROR! proxy image not found  "+image_path)
         return asset_group
     }
-    MessageLog.trace("[use_proxy_image] Importing proxy image "+image_path)
-    var image_node = group.importImage(image_path)
-    image_node.linkOutNode(group.multiportOut);
-    group.multiportIn.linkOutNode(image_node);
+    MessageLog.trace("[use_proxy_image] Importing proxy image "+image_path)    
+    
+    // var image_node =  asset_group.group.importImage(image_path)
+    // test with native api 
+    var image_handler = new ImageHandler()
+    var image_node = image_handler.importImageInGroup(asset_group.group.path,image_path)
 
+    if(!image_node){
+        MessageLog.trace("[use_proxy_image] ERROR while creating image node ")
+        return asset_group
+    }
+
+
+    image_node.linkOutNode( asset_group.group.multiportOut);
+    asset_group.group.multiportIn.linkOutNode(image_node);
+
+    
     var nodes = [image_node]
     asset_group.group.multiportIn.centerAbove(nodes)
     asset_group.group.multiportOut.centerBelow(nodes)

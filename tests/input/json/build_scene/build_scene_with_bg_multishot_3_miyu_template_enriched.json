@@ -94,7 +94,31 @@
                         "role": "background",
                         "import_strategy": "use_proxy_image",
                         "deployment_strategy": "place_bg_with_shot_cadre",
-                        "path": "__LIBRARY__/backgrounds/group_based/multishot_123.psd"
+                        "path": "__LIBRARY__/backgrounds/group_based/multishot_123.psd",
+                        "computed": {
+                            "cadres": [
+                                {
+                                    "name": "SH001_camera",
+                                    "shot": "SH001",
+                                    "path": "__/group_based/multishot_123.psd",
+                                    "frame": {
+                                        "x": 252,
+                                        "y": 1474,
+                                        "width": 1071,
+                                        "height": 602
+                                    },
+                                    "background": {
+                                        "x": 0,
+                                        "y": 0,
+                                        "width": 3450,
+                                        "height": 2293
+                                    },
+                                    "dcx": 1725,
+                                    "dcy": 1146
+                                }
+                            ],
+                            "proxy_image": "D:\\1_TRAVAIL\\WIP\\MIYU\\dev\\repos\\HarmonyAdapter\\tests\\input\\tpl\\library\\backgrounds\\group_based\\multishot_123_proxy.png"
+                        }
                     }
                 ]
             }

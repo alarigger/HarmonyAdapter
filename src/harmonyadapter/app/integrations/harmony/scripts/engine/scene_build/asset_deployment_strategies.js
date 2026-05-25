@@ -29,6 +29,8 @@ function DeploymentStrategiesRegister() {
     this.add = function (name, func) {
         this._table[name] = func
     }
+
+
     /**
      * 
      * @param {AssetGroup} asset_group 
@@ -36,19 +38,54 @@ function DeploymentStrategiesRegister() {
      * @returns {$.oNode[]}
      */
     this.apply = function (asset_group, casting_importer) {
-        const asset_type = asset_group.get_asset_type() 
+        const asset_type = asset_group.get_asset_type()
         var strategy_name = asset_group.get_deployment_strategy() || asset_type
         casting_importer = casting_importer || new CastingImporter()
+
         if (!this._table[strategy_name] && asset_type != strategy_name) {
             // fall back to asset type
-            strategy_name =  asset_type
-        }        
+            strategy_name = asset_type
+        }
+
         if (!this._table[strategy_name]) {
-            MessageLog.trace(" Deployment Strategy not found: " + strategy_name)
+            MessageLog.trace("[Deployment] ERROR Deployment Strategy not found: " + strategy_name)
             return asset_group
         }
 
-        return this._table[strategy_name](asset_group, casting_importer)
+        var last_error = null
+
+        // try twice
+        for (var attempt = 1; attempt <= 1; attempt++) {
+            try {
+                MessageLog.trace(
+                    "[Deployment] --> Applying deployment strategy: " + strategy_name +
+                    " (attempt " + attempt + ")"
+                )
+
+                return this._table[strategy_name](
+                    asset_group,
+                    casting_importer
+                )
+
+            } catch (err) {
+                last_error = err
+
+                MessageLog.trace(
+                    "[Deployment] Error applying deployment strategy '" +
+                    strategy_name +
+                    "' on attempt " + attempt +
+                    ": " + err
+                )
+            }
+        }
+
+        // failed after 2 attempts
+        MessageLog.trace(
+            "[Deployment] Deployment strategy failed after 2 attempts: " +
+            strategy_name
+        )
+
+        throw last_error
     }
 }
 var deployment_strategy_register = new DeploymentStrategiesRegister()
