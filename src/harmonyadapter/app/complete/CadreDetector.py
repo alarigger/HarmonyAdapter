@@ -14,6 +14,13 @@ STUDIO_CONVENTIONS= {
     ]
 }
 
+EXPORT_WIDTH = 1920# HD 
+EXPORT_HEIGTH= 1080 # HD 
+EXPORT_RATIO = EXPORT_WIDTH/EXPORT_HEIGTH # HD 
+
+
+
+
 class CadreDetector():
     
     def __init__(self):
@@ -21,13 +28,52 @@ class CadreDetector():
             re.compile(p, re.IGNORECASE)
             for p in STUDIO_CONVENTIONS["shot_patterns"]
         ]
+        self._repair = CadreRepairPipeline()
     
     def parse_cadres(self, psd_path: str) -> list[Cadre]:
         psd = PSDDocument(psd_path).parse()        
         cadres = []
         cadres += self._parse_with_layers_names(psd)
         cadres += self._parse_with_group_hierarchy(psd)
-        return self._deduplicate(cadres)
+        
+        cadres = self._deduplicate(cadres)
+        processed_cadres= []
+        for cadre in cadres:
+            final_cadre = self.process_cadre(psd,cadre)
+            processed_cadres.push(final_cadre)
+            
+        return processed_cadres 
+            
+    def process_cadre(self,psd:PSDDocument, cadre:Cadre):
+
+        try:
+            self.validate_cadre(psd, cadre)
+        except CadreValidationError as e:
+            cadre = self._repair.repair(psd,cadre,e)
+            # validate again after repair
+            self.validate_cadre(psd, cadre)
+        return cadre    
+        
+
+    
+    def validate_cadre(self, psd:PSDDocument,cadre: Cadre):
+
+        ratio = cadre.width / cadre.height
+
+        if abs(ratio - EXPORT_RATIO) > 0.01:
+            raise CadreRatioError(
+                detected_ratio=ratio,
+                expected_ratio=EXPORT_RATIO,
+                cadre=cadre
+            )
+
+        if cadre.x < 0 or cadre.y < 0:
+            raise CadreOutOfBoundError()
+
+        if cadre.width < EXPORT_WIDTH:
+            raise CadreInsecureSizeError()
+            
+
     
     def _parse_with_layers_names(self,psd:PSDDocument)->list[Cadre]:
         cadres = []
@@ -117,5 +163,73 @@ class CadreDetector():
             result.append(c)
 
         return result
-            
+    
+    
+class CadreValidationError(Exception):
+    pass
 
+class CadreRatioError(CadreValidationError):
+    '''
+        the cadre do not match the default ratio 
+        either the cadre is rotated and the bounding box do not match 
+        either the bounding box is stretched by a misplaced pixel outside the cadre rectangle image 
+    '''
+    def __init__(
+        self,
+        detected_ratio: float,
+        expected_ratio: float,
+        cadre=None
+    ):
+        self.detected_ratio = detected_ratio
+        self.expected_ratio = expected_ratio
+
+        super().__init__(
+            f"Expected {expected_ratio}, got {detected_ratio}"
+        )
+
+class CadreOutOfBoundError(CadreValidationError):
+    '''
+        the cadre is covering pixels outside the background bounds 
+    '''
+    pass
+
+class CadreInsecureSizeError(CadreValidationError):
+    '''
+        the cadre size is smaller than the project export size , zooming in beyond the project pixel definition 
+    '''
+    pass
+
+    
+class CadreRepairPipeline:
+
+    def __init__(self):
+
+        self._repair_map = {
+            CadreRatioError: self.fix_ratio,
+            CadreOutOfBoundError: self.fix_bounds,
+            CadreInsecureSizeError: self.fix_size,
+        }
+
+    def repair(self, psd:PSDDocument,cadre:Cadre, error:CadreValidationError):
+
+        repair_fn = self._repair_map.get(type(error))
+
+        if not repair_fn:
+            raise error
+
+        return repair_fn(cadre, error)
+    
+    def fix_ratio(self, psd:PSDDocument,cadre:Cadre, error:CadreValidationError):
+
+        # try rotating first
+        rotated_ratio = cadre.height / cadre.width
+
+        if abs(rotated_ratio - EXPORT_RATIO) < 0.01:
+            cadre.rotate_90()
+            return cadre
+
+        # maybe trim stray pixels
+        cadre.trim_transparent_edges()
+
+        return cadre
+        
